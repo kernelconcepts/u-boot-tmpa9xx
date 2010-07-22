@@ -2629,6 +2629,7 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 	 * possibly credible NAND flash to appear. If the two results do
 	 * not match, ignore the device completely.
 	 */
+	chip->cmdfunc(mtd, NAND_CMD_RESET, -1, -1);
 
 	chip->cmdfunc(mtd, NAND_CMD_READID, 0x00, -1);
 

@@ -116,13 +116,21 @@ static u8 DM9000_ior(int);
 static void DM9000_iow(int reg, u8 value);
 
 /* DM9000 network board routine ---------------------------- */
-
+#if defined(CONFIG_SOC_TMPA900) || defined(CONFIG_SOC_TMPA910)
+#define DM9000_outb(d,r) ( *((volatile u32 *)(r)) = (d << 16) )
+#define DM9000_outw(d,r) ( *((volatile u32 *)(r)) = (d << 16) )
+#define DM9000_outl(d,r) ( *((volatile u32 *)(r)) = (d << 16) )
+#define DM9000_inb(r)    ( *((volatile u32 *)(r)) >> 16 )
+#define DM9000_inw(r)    ( *((volatile u32 *)(r)) >> 16 )
+#define DM9000_inl(r)    ( *((volatile u32 *)(r)) >> 16 )
+#else
 #define DM9000_outb(d,r) writeb(d, (volatile u8 *)(r))
 #define DM9000_outw(d,r) writew(d, (volatile u16 *)(r))
 #define DM9000_outl(d,r) writel(d, (volatile u32 *)(r))
 #define DM9000_inb(r) readb((volatile u8 *)(r))
 #define DM9000_inw(r) readw((volatile u16 *)(r))
 #define DM9000_inl(r) readl((volatile u32 *)(r))
+#endif
 
 #ifdef CONFIG_DM9000_DEBUG
 static void

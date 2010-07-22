@@ -1,0 +1,53 @@
+Summary
+=======
+
+This README is about U-Boot support for Toshiba ARM 926EJS based family of SoCs.
+
+Currently the following boards are supported:
+
+* BMSKTOPASA910 aka Topas910
+
+* BMSKTOPASA900 aka TopasA900
+
+* Glyn TMPA900 CPU BOARD aka Tonga2
+
+Build
+=====
+
+The Topas 910 and TopasA 900 boards have both, NOR and NAND Flash, while
+the Tonga2 board only has NAND Flash available.
+
+
+Topas910 NOR Image:
+make topas910
+
+Topas910 NAND Image:
+make topas910_nand
+
+TopasA900 NOR Image:
+make topasa900
+
+TopasA900 NAND Image:
+make topas900_nand
+
+Tonga2 NAND Image:
+make tonga2
+
+As there is no NAND writing support for JTAG interfaces available at
+the moment you first have to flash the NOR images once to the
+Topas based boards. After starting the NOR Image you are able to flash the
+NAND image from the NOR based u-boot.
+
+The Tonga2 Board comes with preinstalled u-boot NAND image.
+You could just update to a new image by overwriting the old version with the new one.
+Further information for the Tonga2 platform could be found at:
+http://www.toshiba-mikrocontroller.de/
+
+Bootloader
+==========
+Booting up from NOR is straight forward as the NOR is mapped to the chip.
+Booting from NAND is using internal Rom Bootloader.
+This one is loading the autoboot.bin (inside nand_tmpa9x0).
+This code then sets up the memory and clocks and loads the u-boot from the NAND.
+The autoboot code is closed source and is not public.
+If you need this code you have to sign NDA with Toshiba.
