@@ -221,7 +221,6 @@ LIBS += drivers/power/libpower.a
 LIBS += drivers/spi/libspi.a
 ifeq ($(CPU),mpc83xx)
 LIBS += drivers/qe/qe.a
-LIBS += arch/powerpc/cpu/mpc8xxx/lib8xxx.a
 endif
 ifeq ($(CPU),mpc85xx)
 LIBS += drivers/qe/qe.a
@@ -245,13 +244,6 @@ LIBS += common/libcommon.a
 LIBS += lib/libfdt/libfdt.a
 LIBS += api/libapi.a
 LIBS += post/libpost.a
-
-ifeq ($(SOC),omap3)
-LIBS += $(CPUDIR)/omap-common/libomap-common.a
-endif
-ifeq ($(SOC),omap4)
-LIBS += $(CPUDIR)/omap-common/libomap-common.a
-endif
 
 LIBS := $(addprefix $(obj),$(LIBS))
 .PHONY : $(LIBS) $(TIMESTAMP_FILE) $(VERSION_FILE)
@@ -299,6 +291,19 @@ __LIBS := $(subst $(obj),,$(LIBS)) $(subst $(obj),,$(LIBBOARD))
 
 # Always append ALL so that arch config.mk's can add custom ones
 ALL += $(obj)u-boot.srec $(obj)u-boot.bin $(obj)System.map $(U_BOOT_NAND) $(U_BOOT_ONENAND)
+
+ifeq ($(BOARD),tonga2)
+ALL += u_boot_tonga2_nand
+endif
+
+ifeq ($(BOARD),topasa900_nand)
+ALL += u_boot_topasa900_nand
+endif
+
+ifeq ($(BOARD),topas910_nand)
+ALL += u_boot_topas910_nand
+endif
+
 
 all:		$(ALL)
 
@@ -396,6 +401,21 @@ $(VERSION_FILE):
 $(TIMESTAMP_FILE):
 		@LC_ALL=C date +'#define U_BOOT_DATE "%b %d %C%y"' > $@
 		@LC_ALL=C date +'#define U_BOOT_TIME "%T"' >> $@
+
+u_boot_tonga2_nand:
+		@echo "Generating Tonga2 board NAND Flash image ... please be patient ... this took a while"
+		@chmod 700 $(TOPDIR)/nand_tmpa9x0/gen_nand_image.sh
+		@$(TOPDIR)/nand_tmpa9x0/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2.bin $(TOPDIR)/nand_tmpa9x0/autoboot_tonga2.binary $(TOPDIR)/u-boot.bin 2048
+
+u_boot_topasa900_nand:
+		@echo "Generating Topasa900 board NAND Flash image ... please be patient ... this took a while"
+		@chmod 700 $(TOPDIR)/nand_tmpa9x0/gen_nand_image.sh
+		@$(TOPDIR)/nand_tmpa9x0/gen_nand_image.sh $(TOPDIR)/u-boot_nand_topasa900.bin $(TOPDIR)/nand_tmpa9x0/autoboot_topas.binary $(TOPDIR)/u-boot.bin 2048
+
+u_boot_topas910_nand:
+		@echo "Generating Topas910 board NAND Flash image ... please be patient ... this took a while"
+		@chmod 700 $(TOPDIR)/nand_tmpa9x0/gen_nand_image.sh
+		@$(TOPDIR)/nand_tmpa9x0/gen_nand_image.sh $(TOPDIR)/u-boot_nand_topas910.bin $(TOPDIR)/nand_tmpa9x0/autoboot_topas.binary $(TOPDIR)/u-boot.bin 2048
 
 gdbtools:
 		$(MAKE) -C tools/gdb all || exit 1
@@ -2149,6 +2169,14 @@ edb9312_config \
 edb9315_config \
 edb9315a_config: unconfig
 	@$(MKCONFIG) -n $@ -t $(@:_config=) edb93xx arm arm920t edb93xx - ep93xx
+        
+topas910_config \
+topas910_nand_config \
+topasa900_config \
+topasa900_nand_config \
+tonga2_config: unconfig
+	@$(MKCONFIG) -n $@ -t $(@:_config=) $(@:_config=) arm arm926ejs $(@:_config=) - tmpa9xx 
+	@ln -s tmpa9xx board/$(@:_config=)
 
 #########################################################################
 # ARM supplied Versatile development boards
@@ -2432,6 +2460,7 @@ espt_config  :   unconfig
 
 clean:
 	@rm -f $(obj)examples/standalone/82559_eeprom			  \
+	       $(obj)examples/standalone/smc911x_eeprom			  \
 	       $(obj)examples/standalone/atmel_df_pow2			  \
 	       $(obj)examples/standalone/eepro100_eeprom		  \
 	       $(obj)examples/standalone/hello_world			  \
@@ -2461,6 +2490,8 @@ clean:
 	@rm -f $(ONENAND_BIN)
 	@rm -f $(obj)onenand_ipl/u-boot.lds
 	@rm -f $(TIMESTAMP_FILE) $(VERSION_FILE)
+	@rm -f $(obj)board/$(BOARD)
+       
 	@find $(OBJTREE) -type f \
 		\( -name 'core' -o -name '*.bak' -o -name '*~' \
 		-o -name '*.o'	-o -name '*.a' -o -name '*.exe'	\) -print \
@@ -2468,6 +2499,8 @@ clean:
 
 clobber:	clean
 	@find $(OBJTREE) -type f \( -name .depend \
+		-o -name '*.srec' -o -name '*.bin' -o -name u-boot.img \
+		-o -name '*.dep' \
 		-o -name '*.srec' -o -name '*.bin' -o -name u-boot.img \) \
 		-print0 \
 		| xargs -0 rm -f
@@ -2475,6 +2508,9 @@ clobber:	clean
 		$(obj)cscope.* $(obj)*.*~
 	@rm -f $(obj)u-boot $(obj)u-boot.map $(obj)u-boot.hex $(ALL)
 	@rm -f $(obj)u-boot.kwb
+	@rm -f $(obj)include/autoconf.mk
+	@rm -f $(obj)include/config.h
+	@rm -f $(obj)include/config.mk
 	@rm -f $(obj)u-boot.imx
 	@rm -f $(obj)tools/{env/crc32.c,inca-swap-bytes}
 	@rm -f $(obj)arch/powerpc/cpu/mpc824x/bedbug_603e.c
