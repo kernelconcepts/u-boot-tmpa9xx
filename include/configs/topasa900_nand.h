@@ -29,7 +29,6 @@
 #define CONFIG_SKIP_LOWLEVEL_INIT	
 #define CONFIG_SKIP_RELOCATE_UBOOT
 
-#undef  CONFIG_SYS_NO_FLASH		/* even if booting from NAND, make NOR available*/
 #define CONFIG_SYS_CONSOLE_INFO_QUIET
 
 /* SoC Configuration */
@@ -58,6 +57,13 @@
 #define CONFIG_SERVERIP		    	192.168.1.1
 
 /* NAND */
+#define CONFIG_ENV_OFFSET_OOB
+#define CONFIG_NAND_DYNPART
+#define MTDIDS_DEFAULT			 "nand0=tmpa9x0-nand"
+#define CFG_NAND_DYNPART_MTD_KERNEL_NAME "tmpa9x0-nand"
+
+
+#define CONFIG_SYS_NO_FLASH
 #define	CONFIG_ENV_IS_IN_NAND
 #define	CONFIG_SYS_ENV_SECT_SIZE	0x20000
 
@@ -68,19 +74,9 @@
 #define CONFIG_SYS_NAND_BASE_LIST	{ 0x00000000, }
 #define CONFIG_SYS_MAX_NAND_DEVICE	1
 #define CONFIG_SYS_NAND_MAX_CHIPS	1
+#define CFG_MAX_NAND_DEVICE		CONFIG_SYS_NAND_MAX_CHIPS
 #define	CONFIG_ENV_SIZE			CONFIG_SYS_ENV_SECT_SIZE
-#define CONFIG_ENV_OFFSET		(CONFIG_ENV_SIZE*3)
-
-/* NOR */
-#define CONFIG_FLASH_CFI_DRIVER
-#define CONFIG_SYS_FLASH_CFI
-#define CONFIG_SYS_MAX_FLASH_BANKS	1		/* max number of flash banks */
-#define CONFIG_SYS_FLASH_SECT_SZ	0x20000		/* 128KB sect size Spansion Flash */
-#define PHYS_FLASH_1			0x20000000	/* CS0 Base address 	 */
-#define PHYS_FLASH_SIZE			0x2000000	/* Flash size 32MB 	 */
-#define CONFIG_SYS_FLASH_BASE		PHYS_FLASH_1	/* Flash Base for U-Boot */
-
-#define CONFIG_SYS_MAX_FLASH_SECT	(PHYS_FLASH_SIZE/CONFIG_SYS_FLASH_SECT_SZ)
+#define CONFIG_ENV_OFFSET               (CONFIG_ENV_SIZE*4)
 
 /* U-Boot command configuration */
 #include <config_cmd_default.h>
@@ -90,10 +86,9 @@
 #undef CONFIG_CMD_SETGETDCR
 
 #define CONFIG_CMD_JFFS2
+#define CONFIG_JFFS2_NAND
+#define CONFIG_JFFS2_DEV		"tmpa9x0-nand"
 #define	CONFIG_CMD_ENV
-#define CONFIG_CMD_FLASH
-#define CONFIG_CMD_ASKENV
-#define CONFIG_CMD_PING
 #define CONFIG_CMD_SAVES
 #define CONFIG_CMD_MTDPARTS
 #define CONFIG_MTD_PARTITIONS
@@ -118,12 +113,15 @@
 #define CONFIG_SYS_LONGHELP
 
 #define CONFIG_BOOTDELAY		3
-#define CONFIG_BOOTCOMMAND		"nand read 0x40600000 0x80000 0x300000; bootm 0x40600000"
-#define CONFIG_BOOTARGS 		"mtdparts=physmap-flash.0:-(spare) " \
-					"console=ttyS0,115200n8 root=/dev/mtdblock2 rootfstype=jffs2"
+#define CONFIG_BOOTCOMMAND		"run bootargs_base; nboot kernel; bootm"
 
-#define CONFIG_EXTRA_ENV_SETTINGS	"update_kernel=dhcp uImage-tonga; nand erase 0x80000 0x300000; nand write ${fileaddr} 0x80000 0x300000\0" \
-					"update_rootfs=dhcp rootfs-tonga; nand erase 0x380000; nand write ${fileaddr} 0x380000 ${filesize}\0"
+#define CONFIG_EXTRA_ENV_SETTINGS	"update_kernel=dhcp uImage-topasa900; nand erase kernel; nand write ${fileaddr} kernel\0" \
+									"update_rootfs=dhcp rootfs-topasa900; nand erase rootfs; nand write ${fileaddr} rootfs\0" \
+                                    "rootfs_jffs2=root=/dev/mtdblock4 rootfstype=jffs2\0" \
+                                    "rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
+                                    "rootfs=${rootfs_jffs2}\0"\
+                                    "bootargs_base=setenv bootargs console=ttyS0,115200n8 ${rootfs} ${mtdparts} ethaddr=${ethaddr}\0"
+
 #define CONFIG_CMDLINE_EDITING
 #define CONFIG_VERSION_VARIABLE
 #define CONFIG_TIMESTAMP
