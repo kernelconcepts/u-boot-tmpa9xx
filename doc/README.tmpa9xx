@@ -48,6 +48,25 @@ You could just update to a new image by overwriting the old version with the new
 Further information for the Tonga2 platform could be found at:
 http://www.toshiba-mikrocontroller.de/
 
+If you want to use NAND booting on any of the devices, you should start
+with the following initalisation sequence (if you are starting a new flashed
+u-boot) from the command line:
+
+nand bad
+dynpart
+nand env.oob set u-boot_env
+setenv ethaddr 'DE:AD:DE:AD:DE:AD'
+saveenv
+
+Explanation:
+nand bad                     - generates the bad block table (bbt)
+dynpart                      - generates a dynamic partion table for the kernel
+                               (mtdparts) depending on the bbt
+nand env.oob set u-boot_env  - saves the position of the u-boot configuration
+                               in the oob area of the first page
+setenv ethaddr               - sets your ethernet mac (only needed for Topas2)
+saveenv                      - saves the configuration 
+
 Bootloader
 ==========
 Booting up from NOR is straight forward as the NOR is mapped to the chip.
