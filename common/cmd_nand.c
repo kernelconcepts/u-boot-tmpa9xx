@@ -30,6 +30,10 @@ int find_dev_and_part(const char *id, struct mtd_device **dev,
 		      u8 *part_num, struct part_info **part);
 #endif
 
+#ifdef CONFIG_NAND_DYNPART                               
+extern int nand_net_part_size(struct part_info *);
+#endif
+
 static int nand_dump(nand_info_t *nand, ulong off, int only_oob)
 {
 	int i;
@@ -94,7 +98,7 @@ static inline int str2long(char *p, ulong *num)
 }
 
 static int
-arg_off_size(int argc, char * const argv[], nand_info_t *nand, ulong *off, size_t *size)
+arg_off_size(int argc, char * const argv[], nand_info_t *nand, ulong *off, size_t *size, int net)
 {
 	int idx = nand_curr_device;
 #if defined(CONFIG_CMD_MTDPARTS)
@@ -117,8 +121,21 @@ arg_off_size(int argc, char * const argv[], nand_info_t *nand, ulong *off, size_
 				}
 				if (*size > part->size)
 					*size = part->size;
+                               if (*size > part->size) {
+#ifdef CONFIG_NAND_DYNPART                               
+                                       if (net)
+                                               *size = nand_net_part_size(part);
+                                       else
+#endif                                       
+                                               *size = part->size;
+                               }
 			} else {
-				*size = part->size;
+#ifdef CONFIG_NAND_DYNPART                               
+                               if (net)
+                                       *size = nand_net_part_size(part);
+                               else
+#endif                               
+                                       *size = part->size;
 			}
 			idx = dev->id->num;
 			*nand = nand_info[idx];
@@ -223,7 +240,7 @@ int do_nand_env_oob(cmd_tbl_t *cmdtp, nand_info_t *nand,
 			goto usage;
 
 		if (arg_off_size(argc - 2, argv + 2, nand, &addr,
-				 &dummy_size) < 0) {
+				 &dummy_size,1) < 0) {
 			printf("Offset or partition name expected\n");
 			return 1;
 		}
@@ -405,7 +422,7 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 
 		printf("\nNAND %s: ", scrub ? "scrub" : "erase");
 		/* skip first two or three arguments, look for offset and size */
-		if (arg_off_size(argc - o, argv + o, nand, &off, &size) != 0)
+		if (arg_off_size(argc - o, argv + o, nand, &off, &size, 0) != 0)
 			return 1;
 
 		memset(&opts, 0, sizeof(opts));
@@ -472,7 +489,7 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 
 		read = strncmp(cmd, "read", 4) == 0; /* 1 = read, 0 = write */
 		printf("\nNAND %s: ", read ? "read" : "write");
-		if (arg_off_size(argc - 3, argv + 3, nand, &off, &size) != 0)
+		if (arg_off_size(argc - 3, argv + 3, nand, &off, &size, 1) != 0)
 			return 1;
 
 		s = strchr(cmd, '.');
@@ -562,7 +579,7 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 	}
 
 	if (strcmp(cmd, "unlock") == 0) {
-		if (arg_off_size(argc - 2, argv + 2, nand, &off, &size) < 0)
+		if (arg_off_size(argc - 2, argv + 2, nand, &off, &size, 0) < 0)
 			return 1;
 
 		if (!nand_unlock(nand, off, size)) {

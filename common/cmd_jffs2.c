@@ -615,6 +615,46 @@ int do_jffs2_fsinfo(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	return 1;
 }
 
+#if defined(CONFIG_NAND_DYNPART)
+/* Return the 'net size' of the partition (i.e. excluding any bad blocks) */
+unsigned int nand_net_part_size(struct part_info *part)
+{
+       struct mtd_info *mtd;
+       unsigned int offs;
+       unsigned int bb_delta = 0;
+
+       if (!part || !part->dev || !part->dev->id ||
+           part->dev->id->num >= CFG_MAX_NAND_DEVICE)
+               return 0;
+
+       mtd = &nand_info[part->dev->id->num];
+
+       for (offs = part->offset; offs < part->offset + part->size;
+            offs += mtd->erasesize) {
+               if (nand_isbad_bbt(mtd, offs, 0))
+                       bb_delta += mtd->erasesize;
+       }
+
+       return part->size - bb_delta;
+}
+
+extern int nand_create_mtd_dynpart(struct mtd_info *mtd);
+
+int do_dynpart(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
+{
+       extern void dfu_update_strings(void);
+
+#if 0
+       int i = simple_strtoul(argv[1], NULL, 0);
+       if (i >= CFG_MAX_NAND_DEVICE)
+               return -EINVAL;
+#endif
+       nand_create_mtd_dynpart(&nand_info[0]);
+
+       return 0;
+}
+#endif /* CONFIG_NAND_DYNPART */
+
 /***************************************************/
 U_BOOT_CMD(
 	fsload,	3,	0,	do_jffs2_fsload,
@@ -633,5 +673,14 @@ U_BOOT_CMD(
 	fsinfo,	1,	1,	do_jffs2_fsinfo,
 	"print information about filesystems",
 	""
+);        
+#if defined(CONFIG_NAND_DYNPART)
+U_BOOT_CMD(
+       dynpart, 1,     1,      do_dynpart,
+       "dynpart\t- dynamically calculate partition table based on BBT\n",
+       "\n"
+       "    - sets 'mtdparts' according to BBT\n"
 );
+#endif /* CONFIG_NAND_DYNPART */);
 /***************************************************/
+

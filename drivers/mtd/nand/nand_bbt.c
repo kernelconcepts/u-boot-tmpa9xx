@@ -1228,9 +1228,79 @@ int nand_isbad_bbt(struct mtd_info *mtd, loff_t offs, int allowbbt)
 		return 1;
 	case 0x02:
 		return allowbbt ? 0 : 1;
+	case 0x03:
+                return 1;
 	}
 	return 1;
 }
+
+#if defined(CONFIG_NAND_DYNPART)
+extern unsigned int dynpart_size[];
+extern char *dynpart_names[];
+
+#define MTDPARTS_MAX_SIZE 512
+
+int nand_create_mtd_dynpart(struct mtd_info *mtd)
+{
+       struct nand_chip *this = mtd->priv;
+       int part;
+       char *mtdparts;
+       unsigned int cur_offs = 0;
+
+       mtdparts = malloc(MTDPARTS_MAX_SIZE); /* FIXME: bounds checking */
+       if (!mtdparts)
+               return -ENOMEM;
+
+       sprintf(mtdparts, "mtdparts=" CFG_NAND_DYNPART_MTD_KERNEL_NAME ":");
+
+       for (part = 0; dynpart_size[part] != 0; part++) {
+               unsigned int bb_delta = 0;
+               unsigned int offs = 0;
+               char mtdpart[32];
+
+               for (offs = cur_offs;
+                    offs < cur_offs + dynpart_size[part] + bb_delta;
+                    offs += mtd->erasesize) {
+                       if (nand_isbad_bbt(mtd, offs,1))
+                       {
+                               bb_delta += mtd->erasesize;
+                       }
+               }
+
+               /*
+                * Absorb bad blocks immediately following this partition also
+                * into the partition, in order to make next partition start
+                * with a good block. This simplifies handling of the
+                * environment partition.
+                */
+               while (offs < this->chipsize && nand_isbad_bbt(mtd, offs,1)) {
+                       bb_delta += mtd->erasesize;
+                       offs += mtd->erasesize;
+               }
+
+               if (cur_offs + dynpart_size[part] + bb_delta > this->chipsize)
+                       dynpart_size[part] = this->chipsize - cur_offs - bb_delta;
+#if 0
+               printf("partition %u: start = 0x%08x, end=%08x size=%08x, size_inc_bb=%08x\n",
+                       part, cur_offs, cur_offs + dynpart_size[part] + bb_delta,
+                       dynpart_size[part], dynpart_size[part] + bb_delta);
+#endif 
+               cur_offs += dynpart_size[part] + bb_delta;
+               sprintf(mtdpart, "0x%.8x(%.16s),", dynpart_size[part] + bb_delta,
+                       dynpart_names[part]);
+               mtdpart[sizeof(mtdpart)-1] = '\0';
+               strncat(mtdparts, mtdpart,
+                   MTDPARTS_MAX_SIZE-strlen(mtdparts)-1);
+       }
+
+       mtdparts[strlen(mtdparts)-1] = '\0';
+//       printf("mtdparts %s\n", mtdparts);
+       setenv("mtdparts", mtdparts);
+
+       free(mtdparts);
+       return 0;
+}
+#endif /* CONFIG_NAND_DYNPART */
 
 /* XXX U-BOOT XXX */
 #if 0
