@@ -19,19 +19,24 @@ the Tonga2 board only has NAND Flash available.
 
 
 Topas910 NOR Image:
-make topas910
+make topas910_config
+make
 
 Topas910 NAND Image:
-make topas910_nand
+make topas910_nand_config
+make
 
 TopasA900 NOR Image:
-make topasa900
+make topasa900_config
+make
 
 TopasA900 NAND Image:
-make topas900_nand
+make topas900_nand_config
+make
 
 Tonga2 NAND Image:
-make tonga2
+make tonga2_config
+make
 
 As there is no NAND writing support for JTAG interfaces available at
 the moment you first have to flash the NOR images once to the
