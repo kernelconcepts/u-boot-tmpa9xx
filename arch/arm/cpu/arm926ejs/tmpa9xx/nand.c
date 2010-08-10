@@ -285,15 +285,17 @@ static void tmpa9xx_nand_write_buf(struct mtd_info *mtd, const u_char *buf, int 
 {
 	struct nand_chip *this = mtd->priv;
 	struct tmpa9xx_nand_private * priv= (struct tmpa9xx_nand_private *)this->priv;
-        
+        static int former_column;
+
+	if (priv->column==0 || (former_column!=2048 && len==64))
+        {
+		tmpa9xx_nand_set_cmd(NAND_CMD_SEQIN);
+		tmpa9xx_nand_set_addr(priv->column,priv->page_addr);
+		tmpa9xx_nand_set_rw_mode(0);
+        }       
+
 	if ((len==NAND_DMA_TRANSFER_SIZE) && (priv->dma==1))
         {
-		if (priv->column==0)
-                {
-			tmpa9xx_nand_set_cmd(NAND_CMD_SEQIN);
-			tmpa9xx_nand_set_addr(priv->column,priv->page_addr);
-			tmpa9xx_nand_set_rw_mode(0);
-                }       
 		tmpa9xx_nand_dma_write(buf, len);
 		tmpa9xx_nand_start_autoload(0);
 		if ( tmpa9xx_nand_wait_dma_complete(DMA_TIMEOUT)) {
@@ -306,17 +308,13 @@ static void tmpa9xx_nand_write_buf(struct mtd_info *mtd, const u_char *buf, int 
         else
         {
         	int i;
-		if (priv->column==0)
-                {
-			tmpa9xx_nand_set_cmd(NAND_CMD_SEQIN);
-			tmpa9xx_nand_set_addr(priv->column,priv->page_addr);
-			tmpa9xx_nand_set_rw_mode(0);
-                }
 		for (i=0;i < len;i++)
 			NDFDTR=buf[i];
 		while(!tmpa9xx_nand_dev_ready(mtd));
                 priv->column+=len;
-	}       
+	}
+        
+        former_column = priv->column;       
 }
 
 static void tmpa9xx_nand_enable_hwecc(struct mtd_info *mtd, int mode)
