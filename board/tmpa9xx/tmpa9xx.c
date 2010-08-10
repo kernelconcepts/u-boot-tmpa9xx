@@ -65,27 +65,12 @@ static void init_topas(void)
 */
 	GPIORIE |= (1<<2);
 	
-    	SYSCR0 &= 0x3f;
-    	SYSCR0 |= (1<<6);                 		// [7:6]
-
-    	CLKCR4 = 0x1;     			/* EN_USB */
-
 #ifndef TOPAS_910
 	// ports U,V are NANDC
 	GPIOUFR1 = 0xff;
 	GPIOUFR2 = 0x00;
 	GPIOVFR1 = 0xff;
 	GPIOVFR2 = 0x00;
-
-	// Enable USB Host Controller Clock Domain
-	CLKCR5 |= (1<<4);
-	// Set appropriate clock seting for USB in SYSCR8.
-	// For USB device, 24Mhz directly from quartz: [5:4]  11 / 0x3
-	// For USB host  , 48Mhz from F PPL / 4      : [3:0] 100 / 0x4
-	SYSCR8 |= ((0x3<<4)|(0x4<<0));
-
-	// Enable overcurrent
-	USBHOST_OHCI_HcBCR0 = 0;
 #endif
 }
 
@@ -94,7 +79,9 @@ int board_eth_init(bd_t *bis) {
 #ifndef TONGA2
 	return dm9000_initialize(bis);
 #else
+#ifdef CONFIG_SMC911X_BASE
  	return smc911x_initialize(0, CONFIG_SMC911X_BASE);
+#endif //   CONFIG_SMC911X_BASE     
 #endif       
 }
 
@@ -127,3 +114,20 @@ int dram_init (void)
 
 	return 0;
 }
+
+#ifdef CONFIG_NAND_DYNPART
+unsigned int dynpart_size[] = {
+    0x00060000,	/* u-boot normally only needs 2 blocks, keep one more for further development */
+    0x00020000,	/* one page for the u-boot environment */
+    0x00300000,	/* enought for 1024x768x32 */
+    0x00300000,	/* keep some spare for further kernel development */
+    0x10000000-0x00060000-0x00020000-0x00300000-0x00300000,	/* rest of nand */
+    NULL };
+char *dynpart_names[] = {
+    "u-boot",
+    "u-boot_env",
+    "splash",
+    "kernel",
+    "rootfs",
+     NULL };
+#endif
