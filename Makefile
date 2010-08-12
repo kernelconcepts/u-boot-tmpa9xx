@@ -408,23 +408,23 @@ $(TIMESTAMP_FILE):
 
 u_boot_tonga2_nand:
 		@echo "Generating Tonga2 board NAND Flash image ... please be patient ... this took a while"
-		@chmod 700 $(TOPDIR)/nand_tmpa9x0/gen_nand_image.sh
-		@$(TOPDIR)/nand_tmpa9x0/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2.bin $(TOPDIR)/nand_tmpa9x0/autoboot_tonga2.binary $(TOPDIR)/u-boot.bin 2048
+		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
+		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2.bin $(TOPDIR)/nand_tmpa9xx/autoboot_tonga2.binary $(TOPDIR)/u-boot.bin 2048
 
 u_boot_tonga2_sd_nand:
 		@echo "Generating Tonga2 SD Ram board NAND Flash image ... please be patient ... this took a while"
-		@chmod 700 $(TOPDIR)/nand_tmpa9x0/gen_nand_image.sh
-		@$(TOPDIR)/nand_tmpa9x0/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_sd.bin $(TOPDIR)/nand_tmpa9x0/autoboot_tonga2_sd.binary $(TOPDIR)/u-boot.bin 2048
+		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
+		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_sd.bin $(TOPDIR)/nand_tmpa9xx/autoboot_tonga2_sd.binary $(TOPDIR)/u-boot.bin 2048
 
 u_boot_topasa900_nand:
 		@echo "Generating Topasa900 board NAND Flash image ... please be patient ... this took a while"
-		@chmod 700 $(TOPDIR)/nand_tmpa9x0/gen_nand_image.sh
-		@$(TOPDIR)/nand_tmpa9x0/gen_nand_image.sh $(TOPDIR)/u-boot_nand_topasa900.bin $(TOPDIR)/nand_tmpa9x0/autoboot_topas.binary $(TOPDIR)/u-boot.bin 2048
+		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
+		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_topasa900.bin $(TOPDIR)/nand_tmpa9xx/autoboot_topas.binary $(TOPDIR)/u-boot.bin 2048
 
 u_boot_topas910_nand:
 		@echo "Generating Topas910 board NAND Flash image ... please be patient ... this took a while"
-		@chmod 700 $(TOPDIR)/nand_tmpa9x0/gen_nand_image.sh
-		@$(TOPDIR)/nand_tmpa9x0/gen_nand_image.sh $(TOPDIR)/u-boot_nand_topas910.bin $(TOPDIR)/nand_tmpa9x0/autoboot_topas.binary $(TOPDIR)/u-boot.bin 2048
+		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
+		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_topas910.bin $(TOPDIR)/nand_tmpa9xx/autoboot_topas.binary $(TOPDIR)/u-boot.bin 2048
 
 gdbtools:
 		$(MAKE) -C tools/gdb all || exit 1

@@ -30,7 +30,7 @@ DECLARE_GLOBAL_DATA_PTR;
 /*
  * Miscelaneous platform dependent initialisations
  */
-static void init_topas(void)
+static void init_tmpa9xx(void)
 {
 
 	SMC_SET_CYCLES_3 = 0x0004afaa;
@@ -87,7 +87,7 @@ int board_eth_init(bd_t *bis) {
 
 int board_init (void)
 {
-	init_topas();
+	init_tmpa9xx();
 	/* memory and cpu-speed are setup before relocation */
 	/* so we do _nothing_ here */
 
