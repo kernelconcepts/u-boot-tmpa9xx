@@ -67,6 +67,34 @@ nand env.oob set u-boot_env  - saves the position of the u-boot configuration
 setenv ethaddr               - sets your ethernet mac (only needed for Topas2)
 saveenv                      - saves the configuration 
 
+Splash Screen Support
+=====================
+The u-boot for the TMPA9XX boards is also capeable of doing splash screen
+before booting the Linux Kernel.
+There are some limitations given:
+- There is only support for TFT panels at the moment.
+- The splash screen has to be exactly the size and the bits per pixel as the display.
+- The only format supported is BMP or compressed BMP with gzip.
+- The splash screen has to be A8R8G8B8 in case of 24bit TFT
+- The splash screen has to be R5G6B5   in case of 16bit TFT
+
+Both formats could be easily generated with gimp (when saving BMP open up Advanced Options and select format)
+
+If you would like to use the splash screen with NOR Flash, 
+you could flash the splash screen to an apropriate position in the
+flash and use the environment variable: splashimage
+
+Using NAND Flash the thing is a little bit more tricky, as the CPU doen't have
+direct access to the NAND Flash content.
+You have to use the preboot environment variable.
+
+Example:
+>tftp splash.bmp
+>nand write ${fileaddr} splash
+>setenv preboot 'nand read 0x43000000 splash;bmp display 0x43000000'
+>saveenv
+
+
 Bootloader
 ==========
 Booting up from NOR is straight forward as the NOR is mapped to the chip.

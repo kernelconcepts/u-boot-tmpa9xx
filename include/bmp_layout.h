@@ -70,8 +70,9 @@ typedef struct bmp_image {
 #define BMP_DATA_ALIGN	4
 
 /* Constants for the compression field */
-#define BMP_BI_RGB	0
-#define BMP_BI_RLE8	1
-#define BMP_BI_RLE4	2
+#define BMP_BI_RGB		0
+#define BMP_BI_RLE8		1
+#define BMP_BI_RLE4		2
+#define BMP_BI_BITFIELDS	3
 
 #endif							/* _BMP_H_ */

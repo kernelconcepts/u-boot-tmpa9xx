@@ -371,4 +371,37 @@
 #define USBHOST_BASE          	0xF4500000
 #define USBHOST_OHCI_HcBCR0   	__REG__(USBHOST_BASE + 0x080)
 
+/* LCDC */
+#define LCDC_BASE		0xF4200000
+#define LCD_TIMING_0            __REG__(LCDC_BASE + 0x000)
+#define LCD_TIMING_1            __REG__(LCDC_BASE + 0x004)
+#define LCD_TIMING_2            __REG__(LCDC_BASE + 0x008)
+#define LCD_TIMING_3            __REG__(LCDC_BASE + 0x00C)
+#define LCDUPBASE               __REG__(LCDC_BASE + 0x010)
+#define LCDLPBASE               __REG__(LCDC_BASE + 0x014)
+#define LCDIMSC                 __REG__(LCDC_BASE + 0x018)
+#define LCD_CONTROL             __REG__(LCDC_BASE + 0x01C)
+#define LCDRIS                  __REG__(LCDC_BASE + 0x020)
+#define LCDMIS                  __REG__(LCDC_BASE + 0x024)
+#define LCDICR                  __REG__(LCDC_BASE + 0x028)
+#define LCDUPCURR               __REG__(LCDC_BASE + 0x02C)
+#define LCDLPCURR               __REG__(LCDC_BASE + 0x030)
+#define LCD_PALETTE(x)          __REG__(LCDC_BASE + 0x200 + x*4)
+
+/* LCD Controller Option Function */
+#define LCDCOP_BASE 0xf00b0000
+#define LCDCOP_STN64CR             __REG__(LCDCOP_BASE + 0x000)
+#define LCDCOP_STN64CR_G64_8bit    (1 << 1)
+
+/* Power Management Controller */
+#define	PMC_BASE_ADDRESS	(0xF0020000)
+#define PMCDRV			__REG__(PMC_BASE_ADDRESS + 0x0260)
+#define PMCCTL			__REG__(PMC_BASE_ADDRESS + 0x0300)
+#define PMCWV1			__REG__(PMC_BASE_ADDRESS + 0x0400)
+#define PMCRES			__REG__(PMC_BASE_ADDRESS + 0x041C)
+
+#define PMCCTL_PMCPWE  (1 << 6)
+#define PMCWV1_PMCCTLV (1 << 5)
+
+
 #endif
