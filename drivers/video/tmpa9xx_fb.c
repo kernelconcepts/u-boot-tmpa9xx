@@ -29,19 +29,18 @@
 #include <stdio_dev.h>
 #include <asm/arch/tmpa9xx.h>
 
-//static unsigned int display_width=320;
-//static unsigned int display_height=240;
 static unsigned char *framebuffer;
 
 #ifdef TONGA2
-//static unsigned long videoparams[4]={0x19211e4c,0x10040cef,0x013f380d,0x00010828};
-  static unsigned long videoparams[4]={0x651d1e9c,0x210a09df,0x027f3804,0x00010828};
+static unsigned long videoparams[4]={0x19211e4c,0x10040cef,0x013f380d,0x00010828};
 static unsigned int display_bpp=16;
 static unsigned int display_width=640;
 static unsigned int display_height=480;
 #else
 static unsigned long videoparams[4]={0x0707074c,0x020204ef,0x013f200e,0x0001082A};
 static unsigned int display_bpp=32;
+static unsigned int display_width=320;
+static unsigned int display_height=240;
 #endif
 
 static unsigned int hatoi(unsigned char *p)
