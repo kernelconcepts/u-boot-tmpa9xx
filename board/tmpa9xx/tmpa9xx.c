@@ -76,7 +76,7 @@ static void init_tmpa9xx(void)
 
 
 int board_eth_init(bd_t *bis) {
-#ifndef TONGA2
+#if !defined TONGA2 && !defined TONGA2_SD_NO_ETH
 	return dm9000_initialize(bis);
 #else
 #ifdef CONFIG_SMC911X_BASE

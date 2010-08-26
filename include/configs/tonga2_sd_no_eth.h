@@ -23,7 +23,7 @@
 #define __CONFIG_H
 
 /* Tonga2 Board */
-#define TONGA2
+#define TONGA2_SD_NO_ETH
 #define MACH_TYPE MACH_TYPE_TONGA
 
 #define CONFIG_SKIP_LOWLEVEL_INIT	
@@ -39,7 +39,7 @@
 /* Memory Info */
 #define CONFIG_NR_DRAM_BANKS		1
 #define PHYS_SDRAM_1			0x40000000
-#define PHYS_SDRAM_1_SIZE		0x04000000	/* 64MB */
+#define PHYS_SDRAM_1_SIZE		0x02000000	/* 32MB */
 
 /* Serial Driver info: UART0 for console  */
 #define	CONFIG_BAUDRATE			115200
@@ -105,11 +105,11 @@
 #define CONFIG_BOOTCOMMAND		"run bootargs_base; nboot kernel; bootm"
 
 #define CONFIG_EXTRA_ENV_SETTINGS	"update_kernel=dhcp uImage-tonga; nand erase kernel; nand write ${fileaddr} kernel\0" \
-									"update_rootfs=dhcp rootfs-tonga; nand erase rootfs; nand write ${fileaddr} rootfs\0" \
+					"update_rootfs=dhcp rootfs-tonga; nand erase rootfs; nand write ${fileaddr} rootfs\0" \
                                     	"rootfs_jffs2=root=/dev/mtdblock4 rootfstype=jffs2\0" \
                                     	"rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
                                     	"rootfs=${rootfs_jffs2}\0"\
-                                    	"bootargs_base=setenv bootargs console=ttyS0,115200n8 ${rootfs} ${mtdparts} ethaddr=${ethaddr}\0"
+                                    	"bootargs_base=setenv bootargs mem=32M console=ttyS0,115200n8 root=/dev/mtdblock4 rootfstype=jffs2 ${mtdparts}\0"
 
 #define CONFIG_CMDLINE_EDITING
 #define CONFIG_VERSION_VARIABLE

@@ -22,4 +22,12 @@
 # MA 02111-1307 USA
 #
 
+#ifdef TONGA2_SD_NO_ETH
+
+TEXT_BASE = 0x41F00000
+
+#else
+
 TEXT_BASE = 0x43F00000
+
+#endif

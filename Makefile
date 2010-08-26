@@ -300,6 +300,10 @@ ifeq ($(BOARD),tonga2_sd)
 ALL += u_boot_tonga2_sd_nand
 endif
 
+ifeq ($(BOARD),tonga2_sd_no_eth)
+ALL += u_boot_tonga2_sd_no_eth_nand
+endif
+
 ifeq ($(BOARD),topasa900_nand)
 ALL += u_boot_topasa900_nand
 endif
@@ -415,6 +419,11 @@ u_boot_tonga2_sd_nand:
 		@echo "Generating Tonga2 SD Ram board NAND Flash image ... please be patient ... this took a while"
 		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_sd.bin $(TOPDIR)/nand_tmpa9xx/autoboot_sd_16bit.binary $(TOPDIR)/u-boot.bin 2048
+
+u_boot_tonga2_sd_no_eth_nand:
+		@echo "Generating Tonga2 SD Ram No Ethernet board NAND Flash image ... please be patient ... this took a while"
+		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
+		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_sd_no_eth.bin $(TOPDIR)/nand_tmpa9xx/autoboot_sd_16bit.binary $(TOPDIR)/u-boot.bin 2048
 
 u_boot_topasa900_nand:
 		@echo "Generating Topasa900 board NAND Flash image ... please be patient ... this took a while"
@@ -2184,7 +2193,8 @@ topas910_nand_config \
 topasa900_config \
 topasa900_nand_config \
 tonga2_config \
-tonga2_sd_config: unconfig
+tonga2_sd_config \
+tonga2_sd_no_eth_config: unconfig
 	@$(MKCONFIG) -n $@ -t $(@:_config=) $(@:_config=) arm arm926ejs $(@:_config=) - tmpa9xx 
 	@ln -s tmpa9xx board/$(@:_config=)
 
