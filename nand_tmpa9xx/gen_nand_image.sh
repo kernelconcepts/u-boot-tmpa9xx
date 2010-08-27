@@ -61,41 +61,17 @@ UBOOTSTART=131072
 
 UBOOTSTARTBLOCK=`expr $UBOOTSTART / $PAGESIZE`
 
-#echo "writing dummy pages" >&2
-#echo "writing page 0" >&2
-#echo "writing page 1" >&2
 echo -e -n "\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377" > $FILENAME
 size=4080
-while [ $size -gt 0 ] ; do
-echo -e -n "\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377" >> $FILENAME
-size=`expr $size - 16`
-done
-
-#echo "writing header" >&2
-#echo "writing page 2" >&2
+dd if=/dev/zero bs=$size count=1 2> /dev/null | tr '\0' '\377' >> $FILENAME
 echo -e -n "BOOT" >> $FILENAME
 echo -e -n "\0$SIZELOW" >> $FILENAME
 echo -e -n "\0$SIZEHIGH" >> $FILENAME
 size=$PAGESIZE
-while [ $size -gt 0 ] ; do
-echo -e -n "\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377" >> $FILENAME
-size=`expr $size - 16`
-done
-
-#echo "inserting autoloader image" >&2
-#echo "writing page 3" >&2
+dd if=/dev/zero bs=$size count=1 2> /dev/null | tr '\0' '\377' >> $FILENAME
 dd if=$AUTOBIN of=$FILENAME bs=$PAGESIZE seek=3 2> /dev/null
 size=`expr $UBOOTSTART - $PAGESIZE`
-#echo -e -n "filling up $size bytes, please wait ... "  >&2
-while [ $size -gt 0 ] ; do
-echo -e -n "\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377\0377" >> $FILENAME
-# echo -e -n "."
-size=`expr $size - 16`
-done
-#echo " done" >&2
-
-#echo "inserting u-boot image at block $UBOOTSTARTBLOCK" >&2
+dd if=/dev/zero bs=$size count=1 2> /dev/null | tr '\0' '\377' >> $FILENAME 
 dd if=$UBOOT  of=$FILENAME bs=$PAGESIZE seek=$UBOOTSTARTBLOCK 2> /dev/null 
-
 echo "all done" >&2
 exit 0

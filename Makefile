@@ -411,12 +411,12 @@ $(TIMESTAMP_FILE):
 		@LC_ALL=C date +'#define U_BOOT_TIME "%T"' >> $@
 
 u_boot_tonga2_nand:
-		@echo "Generating Tonga2 board NAND Flash image ... please be patient ... this took a while"
+		@echo "Generating Tonga2 board NAND Flash image"
 		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2.bin $(TOPDIR)/nand_tmpa9xx/autoboot_ddr_16bit.binary $(TOPDIR)/u-boot.bin 2048
 
 u_boot_tonga2_sd_nand:
-		@echo "Generating Tonga2 SD Ram board NAND Flash image ... please be patient ... this took a while"
+		@echo "Generating Tonga2 SD Ram board NAND Flash image"
 		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_sd.bin $(TOPDIR)/nand_tmpa9xx/autoboot_sd_16bit.binary $(TOPDIR)/u-boot.bin 2048
 
@@ -426,12 +426,12 @@ u_boot_tonga2_sd_no_eth_nand:
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_sd_no_eth.bin $(TOPDIR)/nand_tmpa9xx/autoboot_sd_16bit.binary $(TOPDIR)/u-boot.bin 2048
 
 u_boot_topasa900_nand:
-		@echo "Generating Topasa900 board NAND Flash image ... please be patient ... this took a while"
+		@echo "Generating Topasa900 board NAND Flash image"
 		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_topasa900.bin $(TOPDIR)/nand_tmpa9xx/autoboot_sd_32bit.binary $(TOPDIR)/u-boot.bin 2048
 
 u_boot_topas910_nand:
-		@echo "Generating Topas910 board NAND Flash image ... please be patient ... this took a while"
+		@echo "Generating Topas910 board NAND Flash image"
 		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_topas910.bin $(TOPDIR)/nand_tmpa9xx/autoboot_sd_32bit.binary $(TOPDIR)/u-boot.bin 2048
 
