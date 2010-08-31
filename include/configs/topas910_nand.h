@@ -112,7 +112,7 @@
 #define CONFIG_SYS_PROMPT_HUSH_PS2	">"
 #define CONFIG_SYS_LONGHELP
 
-#define CONFIG_PREBOOT                  
+#define CONFIG_PREBOOT                  "run setup"
 #define CONFIG_BOOTDELAY		3
 #define CONFIG_BOOTCOMMAND		"run rootfs_base;run bootargs_base; nboot kernel; bootm"
 
@@ -122,6 +122,15 @@
                                     "rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
                                    	"rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\
                                     "bootargs_base=setenv bootargs console=ttyS0,115200n8 ${rootfs} ${mtdparts}\0"
+                                    "setup=" \
+                                    "if test -n mtdparts; then " \
+                                     	"nand bad;"\
+                                        "dynpart;"\
+                                        "nand env.oob set u-boot_env;"\
+                                        "setenv setup;"\
+                                        "setenv preboot;"\
+                                        "saveenv;"\
+                                     "fi\0"
 
 #define CONFIG_CMDLINE_EDITING
 #define CONFIG_VERSION_VARIABLE
