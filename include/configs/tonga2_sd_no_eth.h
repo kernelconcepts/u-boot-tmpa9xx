@@ -74,6 +74,7 @@
 #undef CONFIG_CMD_FPGA
 #undef CONFIG_CMD_SETGETDCR
 #undef CONFIG_CMD_NET
+
 #define CONFIG_CMD_JFFS2
 #define CONFIG_JFFS2_NAND
 #define CONFIG_JFFS2_DEV		"tmpa9x0-nand"
@@ -86,7 +87,7 @@
 #define CONFIG_CMD_UBI
 #define CONFIG_RBTREE
 #define CONFIG_CMD_DHCP
-
+#define CONFIG_CMD_BMP
 #define CONFIG_CRC32_VERIFY
 #define CONFIG_MX_CYCLIC
 
@@ -101,24 +102,33 @@
 #define CONFIG_SYS_PROMPT_HUSH_PS2	">"
 #define CONFIG_SYS_LONGHELP
 
+#define CONFIG_PREBOOT                  
 #define CONFIG_BOOTDELAY		3
-#define CONFIG_BOOTCOMMAND		"run bootargs_base; nboot kernel; bootm"
+#define CONFIG_BOOTCOMMAND		"run rootfs_base;run bootargs_base; nboot kernel; bootm"
 
 #define CONFIG_EXTRA_ENV_SETTINGS	"update_kernel=dhcp uImage-tonga; nand erase kernel; nand write ${fileaddr} kernel\0" \
 					"update_rootfs=dhcp rootfs-tonga; nand erase rootfs; nand write ${fileaddr} rootfs\0" \
                                     	"rootfs_jffs2=root=/dev/mtdblock4 rootfstype=jffs2\0" \
                                     	"rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
-                                    	"rootfs=${rootfs_jffs2}\0"\
-                                    	"bootargs_base=setenv bootargs mem=32M console=ttyS0,115200n8 root=/dev/mtdblock4 rootfstype=jffs2 ${mtdparts}\0"
+                                    	"rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\
+                                        "videoparams=video=tmpa9xxfb:19211e4c:10040cef:013f380d\0" \
+                                    	"bootargs_base=setenv bootargs console=ttyS0,115200n8 ${rootfs} ${mtdparts} ${videoparams}\0"
 
 #define CONFIG_CMDLINE_EDITING
 #define CONFIG_VERSION_VARIABLE
 #define CONFIG_TIMESTAMP
 
+#define CONFIG_NET_RETRY_COUNT 10
+#define CONFIG_SPLASH_SCREEN
+#define CONFIG_VIDEO
+#define CONFIG_VIDEO_BMP_GZIP
+#define CONFIG_SYS_VIDEO_LOGO_MAX_SIZE  0x1800000
+#define CONFIG_VIDEO_TMPA9XX
 /* U-Boot memory configuration */
 
 #define	CONFIG_STACKSIZE		(64 * 1024)
-#define	CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + 512*1024)
+//#define	CONFIG_SYS_MALLOC_LEN		(CONFIG_SYS_VIDEO_LOGO_MAX_SIZE+CONFIG_ENV_SIZE + 512*1024)
+#define CONFIG_SYS_MALLOC_LEN		(4 << 20)	/* Reserve 4 MB for malloc */
 #define CONFIG_SYS_GBL_DATA_SIZE	128		/* for initial data */
 #define CONFIG_SYS_MEMTEST_START	0x04100000
 #define CONFIG_SYS_MEMTEST_END		0x04F00000
