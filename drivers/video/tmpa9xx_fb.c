@@ -139,7 +139,7 @@ int drv_video_init(void)
 
 	memset(framebuffer,0x00, fbmem_size);
 
-#ifdef TONGA2
+#if defined TONGA2 || defined TONGA2_SD_NO_ETH
 	/* Configure Pins and reset LCD */
         GPIOMDIR=3;
         GPIOMFR1=0;
@@ -155,6 +155,10 @@ int drv_video_init(void)
 
 	/* Light */
 	GPIOCDATA=0;
+        
+        /* DE (Display Enable) Pin on Tonga2 board enable */
+        GPIOVDIR =(1<<7);
+        GPIOVDATA=(1<<7);
 #endif
 
 	if (display_bpp==16)

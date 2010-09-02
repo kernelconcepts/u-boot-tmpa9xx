@@ -69,7 +69,7 @@ static void init_tmpa9xx(void)
 	// ports U,V are NANDC
 	GPIOUFR1 = 0xff;
 	GPIOUFR2 = 0x00;
-	GPIOVFR1 = 0xff;
+	GPIOVFR1 = 0x7f;
 	GPIOVFR2 = 0x00;
 #endif
 }
