@@ -1,7 +1,5 @@
 /*
- *  armboot - Startup Code for ARM926EJS CPU-core
- *
- *  Copyright (c) 2001	Marius Gröger <mag@sysgo.de>
+ *  Copyright (c) 2010	Thomas Haase (Thomas.Haase@web.de)
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -22,9 +20,31 @@
  * MA 02111-1307 USA
  */
 
-	.align	5
+.align	5
 .globl reset_cpu
 reset_cpu:
-loop:
-	b	loop
+	ldr	r0, WDOGLOCK	/* Enbale write to WD registers */
+	ldr	r1, =0x1acce551
+	str	r1, [r0]
+        
+	ldr	r0, WDOGLOAD	/* Set counter to minimum value */
+        mov	r1, $0x01
+	str	r1, [r0]
 
+	ldr	r0, WDOGCONTROL /* Enable WD Reset Enable WD Counter */
+        mov	r1, $0x03
+	str	r1, [r0]
+
+	nop
+	nop
+	nop
+	nop
+reset_cpu_loop:
+	b	reset_cpu_loop
+
+WDOGLOAD:
+	.word	 0xf0010000
+WDOGCONTROL:
+	.word	 0xf0010008
+WDOGLOCK:
+	.word	 0xf0010c00
