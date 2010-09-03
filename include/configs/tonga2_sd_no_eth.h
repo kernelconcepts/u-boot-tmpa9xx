@@ -111,7 +111,7 @@
                                     	"rootfs_jffs2=root=/dev/mtdblock4 rootfstype=jffs2\0" \
                                     	"rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
                                     	"rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\
-                                        "videoparams=video=tmpa9xxfb:19211e4c:10040cef:013f380d\0" \
+                                        "videoparams=video=tmpa9xxfb:28050a74:0808290f:01df000b\0" \
                                     	"bootargs_base=setenv bootargs console=ttyS0,115200n8 ${rootfs} ${mtdparts} ${videoparams}\0" \
                                         "setup=" \
                                         "if test -n mtdparts; then " \
