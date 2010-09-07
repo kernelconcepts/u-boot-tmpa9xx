@@ -116,8 +116,8 @@
 #define CONFIG_BOOTDELAY		3
 #define CONFIG_BOOTCOMMAND		"run rootfs_base;run bootargs_base; nboot kernel; bootm"
 
-#define CONFIG_EXTRA_ENV_SETTINGS	"update_kernel=dhcp uImage-topasa900; nand erase kernel; nand write ${fileaddr} kernel\0" \
-									"update_rootfs=dhcp rootfs-topasa900; nand erase rootfs; nand write ${fileaddr} rootfs\0" \
+#define CONFIG_EXTRA_ENV_SETTINGS	"update_kernel=dhcp uImage-topasa900; nand erase kernel; nand write ${fileaddr} kernel ${filesize}\0" \
+									"update_rootfs=dhcp rootfs-topasa900; nand erase rootfs; nand write ${fileaddr} rootfs ${filesize}\0" \
                                     "rootfs_jffs2=root=/dev/mtdblock4 rootfstype=jffs2\0" \
                                     "rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
                                    	"rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\
