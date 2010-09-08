@@ -31,7 +31,7 @@
 
 static unsigned char *framebuffer;
 
-#ifdef TONGA2
+#if defined TONGA2 || defined TONGA2_SD_NO_ETH
 static unsigned long videoparams[4]={0x19211e4c,0x10040cef,0x013f380d,0x00010828};
 static unsigned int display_bpp=16;
 static unsigned int display_width=320;
