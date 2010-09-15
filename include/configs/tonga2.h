@@ -115,7 +115,7 @@
 #define CONFIG_SYS_LONGHELP
 
 #define CONFIG_PREBOOT                  "run setup"
-#define CONFIG_BOOTDELAY		3
+#define CONFIG_BOOTDELAY		1
 #define CONFIG_BOOTCOMMAND		"run rootfs_base;run bootargs_base; nboot kernel; bootm"
 
 #define CONFIG_EXTRA_ENV_SETTINGS	"update_kernel=dhcp uImage-tonga; nand erase kernel; nand write ${fileaddr} kernel ${filesize}\0" \
