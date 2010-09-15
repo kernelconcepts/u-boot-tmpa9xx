@@ -421,7 +421,7 @@ u_boot_tonga2_sd_nand:
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_sd.bin $(TOPDIR)/nand_tmpa9xx/autoboot_sd_16bit.binary $(TOPDIR)/u-boot.bin 2048
 
 u_boot_tonga2_sd_no_eth_nand:
-		@echo "Generating Tonga2 SD Ram No Ethernet board NAND Flash image ... please be patient ... this took a while"
+		@echo "Generating Tonga2 SD Ram No Ethernet board NAND Flash image"
 		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_sd_no_eth.bin $(TOPDIR)/nand_tmpa9xx/autoboot_sd_16bit.binary $(TOPDIR)/u-boot.bin 2048
 

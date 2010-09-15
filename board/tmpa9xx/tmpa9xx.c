@@ -76,12 +76,14 @@ static void init_tmpa9xx(void)
 
 
 int board_eth_init(bd_t *bis) {
-#if !defined TONGA2 && !defined TONGA2_SD_NO_ETH
+#ifdef CONFIG_DM9000_BASE
 	return dm9000_initialize(bis);
 #else
-#ifdef CONFIG_SMC911X_BASE
+ #ifdef CONFIG_SMC911X_BASE
  	return smc911x_initialize(0, CONFIG_SMC911X_BASE);
-#endif //   CONFIG_SMC911X_BASE     
+ #else
+        return 0;
+ #endif //   CONFIG_SMC911X_BASE
 #endif       
 }
 
