@@ -76,15 +76,13 @@ static void init_tmpa9xx(void)
 
 
 int board_eth_init(bd_t *bis) {
-#ifdef CONFIG_DM9000_BASE
+#if defined CONFIG_DM9000_BASE
 	return dm9000_initialize(bis);
-#else
- #ifdef CONFIG_SMC911X_BASE
+#elif defined CONFIG_SMC911X_BASE
  	return smc911x_initialize(0, CONFIG_SMC911X_BASE);
- #else
+#else
         return 0;
- #endif //   CONFIG_SMC911X_BASE
-#endif       
+#endif
 }
 
 int board_init (void)
