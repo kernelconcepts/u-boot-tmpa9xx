@@ -121,7 +121,7 @@
                                     "rootfs_jffs2=root=/dev/mtdblock4 rootfstype=jffs2\0" \
                                     "rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
                                    	"rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\
-                                    "bootargs_base=setenv bootargs console=ttyS0,115200n8 ${rootfs} ${mtdparts}\0"
+                                    "bootargs_base=setenv bootargs console=ttyS0,115200n8 ${rootfs} ${mtdparts}\0" \
                                     "setup=" \
                                     "if test -n mtdparts; then " \
                                      	"nand bad;"\
