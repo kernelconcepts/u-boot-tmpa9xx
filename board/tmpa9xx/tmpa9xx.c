@@ -32,11 +32,21 @@ DECLARE_GLOBAL_DATA_PTR;
  */
 static void init_tmpa9xx(void)
 {
-
+#if defined CONFIG_DM9000_BASE
 	SMC_SET_CYCLES_3 = 0x0004afaa;
 	SMC_SET_OPMODE_3 = 0x00000002;
 	SMC_DIRECT_CMD_3 = 0x00c00000;
-	SMC_TIMEOUT      = 0x1;
+#endif
+#if defined CONFIG_SMC911X_BASE
+/* Tonga2 SD Ram Version */        
+	SMC_SET_CYCLES_3 = 0x0004afaa;
+	SMC_SET_OPMODE_3 = 0x00000001;
+	SMC_DIRECT_CMD_3 = 0x00c00000;
+/* Tonga2 DDR Ram Version */        
+	SMC_SET_CYCLES_5 = 0x0004afaa;
+	SMC_SET_OPMODE_5 = 0x00000001;
+	SMC_DIRECT_CMD_5 = 0x00c00000;
+#endif
 
 	// port J,K are LCDC
 	GPIOJFR1 = 0xff;
