@@ -2195,6 +2195,8 @@ topasa900_nand_config \
 tonga2_config \
 tonga2_sd_config \
 tonga2_sd_no_eth_config: unconfig
+	@[ -z "$(findstring _sd_,$@)" ] || \
+		echo "TEXT_BASE = 0x41F00000" >$(obj)board/tmpa9xx/config.tmp
 	@$(MKCONFIG) -n $@ -t $(@:_config=) $(@:_config=) arm arm926ejs $(@:_config=) - tmpa9xx 
 	@ln -s tmpa9xx board/$(@:_config=)
 

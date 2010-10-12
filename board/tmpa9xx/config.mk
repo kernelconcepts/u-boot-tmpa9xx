@@ -22,12 +22,8 @@
 # MA 02111-1307 USA
 #
 
-#if defined TONGA2_SD_NO_ETH || defined TONGA2_SD
+sinclude $(OBJTREE)/board/$(BOARDDIR)/config.tmp
 
-TEXT_BASE = 0x41F00000
-
-#else
-
+ifndef TEXT_BASE
 TEXT_BASE = 0x43F00000
-
-#endif
+endif
