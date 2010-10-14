@@ -428,6 +428,7 @@ LIST_85xx="		\
 	P2020RDB_NAND	\
 	P2020RDB_SDCARD	\
 	P2020RDB_SPIFLASH	\
+	P4080DS		\
 	PM854		\
 	PM856		\
 	sbc8540		\
@@ -578,6 +579,7 @@ LIST_ARM9="			\
 	edminiv2		\
 	guruplug		\
 	imx27lite		\
+	jadecpu			\
 	lpd7a400		\
 	magnesium		\
 	mv88f6281gtw_ge		\
@@ -817,10 +819,7 @@ LIST_mips_el="			\
 #########################################################################
 
 LIST_I486="		\
-	sc520_cdp	\
 	sc520_eNET	\
-	sc520_spunk	\
-	sc520_spunk_rel	\
 "
 
 LIST_x86="		\

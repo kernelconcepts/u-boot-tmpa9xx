@@ -643,12 +643,10 @@ static void cread_print_hist_list(void)
 
 #define ERASE_TO_EOL() {				\
 	if (num < eol_num) {				\
-		int tmp;				\
-		for (tmp = num; tmp < eol_num; tmp++)	\
-			getcmd_putch(' ');		\
-		while (tmp-- > num)			\
+		printf("%*s", (int)(eol_num - num), ""); \
+		do {					\
 			getcmd_putch(CTL_BACKSPACE);	\
-		eol_num = num;				\
+		} while (--eol_num > num);		\
 	}						\
 }
 
@@ -1418,10 +1416,8 @@ int do_run (cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 {
 	int i;
 
-	if (argc < 2) {
-		cmd_usage(cmdtp);
-		return 1;
-	}
+	if (argc < 2)
+		return cmd_usage(cmdtp);
 
 	for (i=1; i<argc; ++i) {
 		char *arg;

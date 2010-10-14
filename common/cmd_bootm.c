@@ -333,6 +333,9 @@ static int bootm_load_os(image_info_t os, ulong *load_end, int boot_progress)
 	ulong image_start = os.image_start;
 	ulong image_len = os.image_len;
 	uint unc_len = CONFIG_SYS_BOOTM_LEN;
+#if defined(CONFIG_LZMA) || defined(CONFIG_LZO)
+	int ret;
+#endif /* defined(CONFIG_LZMA) || defined(CONFIG_LZO) */
 
 	const char *type_name = genimg_get_type_name (os.type);
 
@@ -386,12 +389,14 @@ static int bootm_load_os(image_info_t os, ulong *load_end, int boot_progress)
 		break;
 #endif /* CONFIG_BZIP2 */
 #ifdef CONFIG_LZMA
-	case IH_COMP_LZMA:
+	case IH_COMP_LZMA: {
+		SizeT lzma_len = unc_len;
 		printf ("   Uncompressing %s ... ", type_name);
 
-		int ret = lzmaBuffToBuffDecompress(
-			(unsigned char *)load, &unc_len,
+		ret = lzmaBuffToBuffDecompress(
+			(unsigned char *)load, &lzma_len,
 			(unsigned char *)image_start, image_len);
+		unc_len = lzma_len;
 		if (ret != SZ_OK) {
 			printf ("LZMA: uncompress or overwrite error %d "
 				"- must RESET board to recover\n", ret);
@@ -400,12 +405,13 @@ static int bootm_load_os(image_info_t os, ulong *load_end, int boot_progress)
 		}
 		*load_end = load + unc_len;
 		break;
+	}
 #endif /* CONFIG_LZMA */
 #ifdef CONFIG_LZO
 	case IH_COMP_LZO:
 		printf ("   Uncompressing %s ... ", type_name);
 
-		int ret = lzop_decompress((const unsigned char *)image_start,
+		ret = lzop_decompress((const unsigned char *)image_start,
 					  image_len, (unsigned char *)load,
 					  &unc_len);
 		if (ret != LZO_E_OK) {
@@ -491,17 +497,14 @@ int do_bootm_subcommand (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv
 			argv++;
 			return bootm_start(cmdtp, flag, argc, argv);
 		}
-	}
-	/* Unrecognized command */
-	else {
-		cmd_usage(cmdtp);
-		return 1;
+	} else {
+		/* Unrecognized command */
+		return cmd_usage(cmdtp);
 	}
 
 	if (images.state >= state) {
 		printf ("Trying to execute a command out of order\n");
-		cmd_usage(cmdtp);
-		return 1;
+		return cmd_usage(cmdtp);
 	}
 
 	images.state |= state;

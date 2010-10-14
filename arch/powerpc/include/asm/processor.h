@@ -495,6 +495,7 @@
 #define   L1CSR1_ICFI		0x00000002	/* Instruction Cache Flash Invalidate */
 #define   L1CSR1_ICE		0x00000001	/* Instruction Cache Enable */
 #define SPRN_L1CSR2	0x25e	/* L1 Data Cache Control and Status Register 2 */
+#define   L1CSR2_DCWS		0x40000000	/* Data Cache Write Shadow */
 #define SPRN_L2CSR0	0x3f9	/* L2 Data Cache Control and Status Register 0 */
 #define   L2CSR0_L2E		0x80000000	/* L2 Cache Enable */
 #define   L2CSR0_L2PE		0x40000000	/* L2 Cache Parity/ECC Enable */
@@ -1052,10 +1053,16 @@
 #define SVR_P2010_E	0x80EB00
 #define SVR_P2020	0x80E200
 #define SVR_P2020_E	0x80EA00
+#define SVR_P3041	0x821103
+#define SVR_P3041_E	0x821903
 #define SVR_P4040	0x820100
 #define SVR_P4040_E	0x820900
 #define SVR_P4080	0x820000
 #define SVR_P4080_E	0x820800
+#define SVR_P5010	0x822100
+#define SVR_P5010_E	0x822900
+#define SVR_P5020	0x822000
+#define SVR_P5020_E	0x822800
 
 #define SVR_8610	0x80A000
 #define SVR_8641	0x809000

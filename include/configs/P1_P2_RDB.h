@@ -129,9 +129,6 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
 #define CONFIG_SYS_CCSRBAR_DEFAULT	0xff700000      /* CCSRBAR Default */
 #endif
 
-#define CONFIG_SYS_PCIE2_ADDR		(CONFIG_SYS_CCSRBAR+0x9000)
-#define CONFIG_SYS_PCIE1_ADDR		(CONFIG_SYS_CCSRBAR+0xa000)
-
 /* DDR Setup */
 #define CONFIG_FSL_DDR2
 #undef CONFIG_FSL_DDR_INTERACTIVE
@@ -521,6 +518,7 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
  */
 #define CONFIG_SYS_LONGHELP			/* undef to save memory	*/
 #define CONFIG_CMDLINE_EDITING			/* Command-line editing */
+#define CONFIG_AUTO_COMPLETE			/* add autocompletion support */
 #define CONFIG_SYS_LOAD_ADDR	0x2000000	/* default load address */
 #define CONFIG_SYS_PROMPT	"=> "		/* Monitor Command Prompt */
 #if defined(CONFIG_CMD_KGDB)

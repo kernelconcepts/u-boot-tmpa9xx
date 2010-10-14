@@ -2,6 +2,8 @@
  * (C) Copyright 2007
  * Gerald Van Baren, Custom IDEAS, vanbaren@cideas.com
  *
+ * Copyright 2010 Freescale Semiconductor, Inc.
+ *
  * See file CREDITS for list of people who contributed to this
  * project.
  *
@@ -496,11 +498,12 @@ int fdt_resize(void *blob)
 
 	/*
 	 * Calculate the actual size of the fdt
-	 * plus the size needed for two fdt_add_mem_rsv, one
-	 * for the fdt itself and one for a possible initrd
+	 * plus the size needed for 5 fdt_add_mem_rsv, one
+	 * for the fdt itself and 4 for a possible initrd
+	 * ((initrd-start + initrd-end) * 2 (name & value))
 	 */
 	actualsize = fdt_off_dt_strings(blob) +
-		fdt_size_dt_strings(blob) + 2*sizeof(struct fdt_reserve_entry);
+		fdt_size_dt_strings(blob) + 5 * sizeof(struct fdt_reserve_entry);
 
 	/* Make it so the fdt ends on a page boundary */
 	actualsize = ALIGN(actualsize + ((uint)blob & 0xfff), 0x1000);
@@ -588,11 +591,30 @@ int fdt_pci_dma_ranges(void *blob, int phb_off, struct pci_controller *hose) {
 
 #ifdef CONFIG_FDT_FIXUP_NOR_FLASH_SIZE
 /*
+ * Provide a weak default function to return the flash bank size.
+ * There might be multiple non-identical flash chips connected to one
+ * chip-select, so we need to pass an index as well.
+ */
+u32 __flash_get_bank_size(int cs, int idx)
+{
+	extern flash_info_t flash_info[];
+
+	/*
+	 * As default, a simple 1:1 mapping is provided. Boards with
+	 * a different mapping need to supply a board specific mapping
+	 * routine.
+	 */
+	return flash_info[cs].size;
+}
+u32 flash_get_bank_size(int cs, int idx)
+	__attribute__((weak, alias("__flash_get_bank_size")));
+
+/*
  * This function can be used to update the size in the "reg" property
- * of the NOR FLASH device nodes. This is necessary for boards with
+ * of all NOR FLASH device nodes. This is necessary for boards with
  * non-fixed NOR FLASH sizes.
  */
-int fdt_fixup_nor_flash_size(void *blob, int cs, u32 size)
+int fdt_fixup_nor_flash_size(void *blob)
 {
 	char compat[][16] = { "cfi-flash", "jedec-flash" };
 	int off;
@@ -604,19 +626,31 @@ int fdt_fixup_nor_flash_size(void *blob, int cs, u32 size)
 	for (i = 0; i < 2; i++) {
 		off = fdt_node_offset_by_compatible(blob, -1, compat[i]);
 		while (off != -FDT_ERR_NOTFOUND) {
+			int idx;
+
 			/*
-			 * Found one compatible node, now check if this one
-			 * has the correct CS
+			 * Found one compatible node, so fixup the size
+			 * int its reg properties
 			 */
 			prop = fdt_get_property_w(blob, off, "reg", &len);
 			if (prop) {
-				reg = (u32 *)&prop->data[0];
-				if (reg[0] == cs) {
-					reg[2] = size;
-					fdt_setprop(blob, off, "reg", reg,
-						    3 * sizeof(u32));
+				int tuple_size = 3 * sizeof(reg);
 
-					return 0;
+				/*
+				 * There might be multiple reg-tuples,
+				 * so loop through them all
+				 */
+				len /= tuple_size;
+				reg = (u32 *)&prop->data[0];
+				for (idx = 0; idx < len; idx++) {
+					/*
+					 * Update size in reg property
+					 */
+					reg[2] = flash_get_bank_size(reg[0],
+								     idx);
+					fdt_setprop(blob, off, "reg", reg,
+						    tuple_size);
+					reg += tuple_size;
 				}
 			}
 
@@ -626,7 +660,7 @@ int fdt_fixup_nor_flash_size(void *blob, int cs, u32 size)
 		}
 	}
 
-	return -1;
+	return 0;
 }
 #endif
 
@@ -860,4 +894,295 @@ void fdt_del_node_and_alias(void *blob, const char *alias)
 
 	off = fdt_path_offset(blob, "/aliases");
 	fdt_delprop(blob, off, alias);
+}
+
+/* Helper to read a big number; size is in cells (not bytes) */
+static inline u64 of_read_number(const __be32 *cell, int size)
+{
+	u64 r = 0;
+	while (size--)
+		r = (r << 32) | be32_to_cpu(*(cell++));
+	return r;
+}
+
+#define PRu64	"%llx"
+
+/* Max address size we deal with */
+#define OF_MAX_ADDR_CELLS	4
+#define OF_BAD_ADDR	((u64)-1)
+#define OF_CHECK_COUNTS(na, ns)	((na) > 0 && (na) <= OF_MAX_ADDR_CELLS && \
+			(ns) > 0)
+
+/* Debug utility */
+#ifdef DEBUG
+static void of_dump_addr(const char *s, const u32 *addr, int na)
+{
+	printf("%s", s);
+	while(na--)
+		printf(" %08x", *(addr++));
+	printf("\n");
+}
+#else
+static void of_dump_addr(const char *s, const u32 *addr, int na) { }
+#endif
+
+/* Callbacks for bus specific translators */
+struct of_bus {
+	const char	*name;
+	const char	*addresses;
+	void		(*count_cells)(void *blob, int parentoffset,
+				int *addrc, int *sizec);
+	u64		(*map)(u32 *addr, const u32 *range,
+				int na, int ns, int pna);
+	int		(*translate)(u32 *addr, u64 offset, int na);
+};
+
+/* Default translator (generic bus) */
+static void of_bus_default_count_cells(void *blob, int parentoffset,
+					int *addrc, int *sizec)
+{
+	const u32 *prop;
+
+	if (addrc) {
+		prop = fdt_getprop(blob, parentoffset, "#address-cells", NULL);
+		if (prop)
+			*addrc = be32_to_cpup(prop);
+		else
+			*addrc = 2;
+	}
+
+	if (sizec) {
+		prop = fdt_getprop(blob, parentoffset, "#size-cells", NULL);
+		if (prop)
+			*sizec = be32_to_cpup(prop);
+		else
+			*sizec = 1;
+	}
+}
+
+static u64 of_bus_default_map(u32 *addr, const u32 *range,
+		int na, int ns, int pna)
+{
+	u64 cp, s, da;
+
+	cp = of_read_number(range, na);
+	s  = of_read_number(range + na + pna, ns);
+	da = of_read_number(addr, na);
+
+	debug("OF: default map, cp="PRu64", s="PRu64", da="PRu64"\n",
+	    cp, s, da);
+
+	if (da < cp || da >= (cp + s))
+		return OF_BAD_ADDR;
+	return da - cp;
+}
+
+static int of_bus_default_translate(u32 *addr, u64 offset, int na)
+{
+	u64 a = of_read_number(addr, na);
+	memset(addr, 0, na * 4);
+	a += offset;
+	if (na > 1)
+		addr[na - 2] = a >> 32;
+	addr[na - 1] = a & 0xffffffffu;
+
+	return 0;
+}
+
+/* Array of bus specific translators */
+static struct of_bus of_busses[] = {
+	/* Default */
+	{
+		.name = "default",
+		.addresses = "reg",
+		.count_cells = of_bus_default_count_cells,
+		.map = of_bus_default_map,
+		.translate = of_bus_default_translate,
+	},
+};
+
+static int of_translate_one(void * blob, int parent, struct of_bus *bus,
+			    struct of_bus *pbus, u32 *addr,
+			    int na, int ns, int pna, const char *rprop)
+{
+	const u32 *ranges;
+	int rlen;
+	int rone;
+	u64 offset = OF_BAD_ADDR;
+
+	/* Normally, an absence of a "ranges" property means we are
+	 * crossing a non-translatable boundary, and thus the addresses
+	 * below the current not cannot be converted to CPU physical ones.
+	 * Unfortunately, while this is very clear in the spec, it's not
+	 * what Apple understood, and they do have things like /uni-n or
+	 * /ht nodes with no "ranges" property and a lot of perfectly
+	 * useable mapped devices below them. Thus we treat the absence of
+	 * "ranges" as equivalent to an empty "ranges" property which means
+	 * a 1:1 translation at that level. It's up to the caller not to try
+	 * to translate addresses that aren't supposed to be translated in
+	 * the first place. --BenH.
+	 */
+	ranges = (u32 *)fdt_getprop(blob, parent, rprop, &rlen);
+	if (ranges == NULL || rlen == 0) {
+		offset = of_read_number(addr, na);
+		memset(addr, 0, pna * 4);
+		debug("OF: no ranges, 1:1 translation\n");
+		goto finish;
+	}
+
+	debug("OF: walking ranges...\n");
+
+	/* Now walk through the ranges */
+	rlen /= 4;
+	rone = na + pna + ns;
+	for (; rlen >= rone; rlen -= rone, ranges += rone) {
+		offset = bus->map(addr, ranges, na, ns, pna);
+		if (offset != OF_BAD_ADDR)
+			break;
+	}
+	if (offset == OF_BAD_ADDR) {
+		debug("OF: not found !\n");
+		return 1;
+	}
+	memcpy(addr, ranges + na, 4 * pna);
+
+ finish:
+	of_dump_addr("OF: parent translation for:", addr, pna);
+	debug("OF: with offset: "PRu64"\n", offset);
+
+	/* Translate it into parent bus space */
+	return pbus->translate(addr, offset, pna);
+}
+
+/*
+ * Translate an address from the device-tree into a CPU physical address,
+ * this walks up the tree and applies the various bus mappings on the
+ * way.
+ *
+ * Note: We consider that crossing any level with #size-cells == 0 to mean
+ * that translation is impossible (that is we are not dealing with a value
+ * that can be mapped to a cpu physical address). This is not really specified
+ * that way, but this is traditionally the way IBM at least do things
+ */
+u64 __of_translate_address(void *blob, int node_offset, const u32 *in_addr,
+			   const char *rprop)
+{
+	int parent;
+	struct of_bus *bus, *pbus;
+	u32 addr[OF_MAX_ADDR_CELLS];
+	int na, ns, pna, pns;
+	u64 result = OF_BAD_ADDR;
+
+	debug("OF: ** translation for device %s **\n",
+		fdt_get_name(blob, node_offset, NULL));
+
+	/* Get parent & match bus type */
+	parent = fdt_parent_offset(blob, node_offset);
+	if (parent < 0)
+		goto bail;
+	bus = &of_busses[0];
+
+	/* Cound address cells & copy address locally */
+	bus->count_cells(blob, parent, &na, &ns);
+	if (!OF_CHECK_COUNTS(na, ns)) {
+		printf("%s: Bad cell count for %s\n", __FUNCTION__,
+		       fdt_get_name(blob, node_offset, NULL));
+		goto bail;
+	}
+	memcpy(addr, in_addr, na * 4);
+
+	debug("OF: bus is %s (na=%d, ns=%d) on %s\n",
+	    bus->name, na, ns, fdt_get_name(blob, parent, NULL));
+	of_dump_addr("OF: translating address:", addr, na);
+
+	/* Translate */
+	for (;;) {
+		/* Switch to parent bus */
+		node_offset = parent;
+		parent = fdt_parent_offset(blob, node_offset);
+
+		/* If root, we have finished */
+		if (parent < 0) {
+			debug("OF: reached root node\n");
+			result = of_read_number(addr, na);
+			break;
+		}
+
+		/* Get new parent bus and counts */
+		pbus = &of_busses[0];
+		pbus->count_cells(blob, parent, &pna, &pns);
+		if (!OF_CHECK_COUNTS(pna, pns)) {
+			printf("%s: Bad cell count for %s\n", __FUNCTION__,
+				fdt_get_name(blob, node_offset, NULL));
+			break;
+		}
+
+		debug("OF: parent bus is %s (na=%d, ns=%d) on %s\n",
+		    pbus->name, pna, pns, fdt_get_name(blob, parent, NULL));
+
+		/* Apply bus translation */
+		if (of_translate_one(blob, node_offset, bus, pbus,
+					addr, na, ns, pna, rprop))
+			break;
+
+		/* Complete the move up one level */
+		na = pna;
+		ns = pns;
+		bus = pbus;
+
+		of_dump_addr("OF: one level translation:", addr, na);
+	}
+ bail:
+
+	return result;
+}
+
+u64 fdt_translate_address(void *blob, int node_offset, const u32 *in_addr)
+{
+	return __of_translate_address(blob, node_offset, in_addr, "ranges");
+}
+
+/**
+ * fdt_node_offset_by_compat_reg: Find a node that matches compatiable and
+ * who's reg property matches a physical cpu address
+ *
+ * @blob: ptr to device tree
+ * @compat: compatiable string to match
+ * @compat_off: property name
+ *
+ */
+int fdt_node_offset_by_compat_reg(void *blob, const char *compat,
+					phys_addr_t compat_off)
+{
+	int len, off = fdt_node_offset_by_compatible(blob, -1, compat);
+	while (off != -FDT_ERR_NOTFOUND) {
+		u32 *reg = (u32 *)fdt_getprop(blob, off, "reg", &len);
+		if (reg) {
+			if (compat_off == fdt_translate_address(blob, off, reg))
+				return off;
+		}
+		off = fdt_node_offset_by_compatible(blob, off, compat);
+	}
+
+	return -FDT_ERR_NOTFOUND;
+}
+
+/**
+ * fdt_alloc_phandle: Return next free phandle value
+ *
+ * @blob: ptr to device tree
+ */
+int fdt_alloc_phandle(void *blob)
+{
+	int offset, len, phandle = 0;
+	const u32 *val;
+
+	for (offset = fdt_next_node(blob, -1, NULL); offset >= 0;
+	     offset = fdt_next_node(blob, offset, NULL)) {
+		val = fdt_getprop(blob, offset, "linux,phandle", &len);
+		if (val)
+			phandle = max(*val, phandle);
+	}
+
+	return phandle + 1;
 }
