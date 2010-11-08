@@ -61,8 +61,8 @@
 /* NAND */
 #define CONFIG_ENV_OFFSET_OOB
 #define CONFIG_NAND_DYNPART
-#define MTDIDS_DEFAULT			 "nand0=tmpa9x0-nand"
-#define CFG_NAND_DYNPART_MTD_KERNEL_NAME "tmpa9x0-nand"
+#define MTDIDS_DEFAULT			 "nand0=tmpa9xx-nand"
+#define CFG_NAND_DYNPART_MTD_KERNEL_NAME "tmpa9xx-nand"
 
 
 #define CONFIG_SYS_NO_FLASH
@@ -89,7 +89,7 @@
 
 #define CONFIG_CMD_JFFS2
 #define CONFIG_JFFS2_NAND
-#define CONFIG_JFFS2_DEV		"tmpa9x0-nand"
+#define CONFIG_JFFS2_DEV		"tmpa9xx-nand"
 #define	CONFIG_CMD_ENV
 #define CONFIG_CMD_SAVES
 #define CONFIG_CMD_MTDPARTS

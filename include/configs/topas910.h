@@ -114,7 +114,7 @@
 #define CONFIG_SYS_PROMPT_HUSH_PS2	">"
 #define CONFIG_SYS_LONGHELP
 
-#define CONFIG_BOOTDELAY		3
+#define CONFIG_BOOTDELAY		1
 #define CONFIG_BOOTCOMMAND		"bootm 0x20800000"
 #define CONFIG_BOOTARGS 		"mtdparts=physmap-flash.0:512k(bootloader)ro,2048k(kernel),-(root) " \
 					"console=ttyS0,115200n8 root=/dev/mtdblock2 rootfstype=jffs2"
