@@ -187,16 +187,16 @@ pll_lockup:
 	STR	r0,[r1,#8]
 
 // set up arbiter
-	MOV	r0,#0x0
+	MOV	r0,#0xfd
 	STR	r0,[r1,#0x100]	//	dmc_id_0_cfg_3 = 0x05;
 
-	MOV	r0,#0x0
+	MOV	r0,#0xfd
 	STR	r0,[r1,#0x104]	//	dmc_id_1_cfg_3 = 0x05;
 
-	MOV	r0,#0x0
+	MOV	r0,#0x3
 	STR	r0,[r1,#0x108]	//	dmc_id_2_cfg_3 = 0x0b;
 
-	MOV	r0,#0x7
+	MOV	r0,#0xfd
 	STR	r0,[r1,#0x10c]	//	dmc_id_3_cfg_3 = 0x05;
 
 
@@ -204,6 +204,11 @@ pll_lockup:
 	MOV	r0,#0
 	STR	r0,[r1,#4]
 /* END of SDRAM INIT */
+
+/* Set SMC_TIMEOUT 1 */
+	LDR	r1,SMC_TIMEOUT_ADDR
+	MOV	r0,#0x01
+	STR	r0,[r1,#0x00]
 
 	mov	pc, lr
 
@@ -213,18 +218,20 @@ pll_lockup:
 PMC_ADDR:
 		.word	0xf0020000
 
+SMC_TIMEOUT_ADDR:
+		.word	0xf00a0050
 DMC_ADDR:
 		.word	0xf4300000
 DMC_DATA0:
 		.word	0x10a
 DMC_DATA1:
-		.word	0x18011
+		.word	0x08011
 DMC_DATA2:
 		.word	0x140fc
 DMC_DATA3:
 		.word	0xff00
 DMC_DATA4:
-		.word	0x80033
+		.word	0x80031
 DMC_DATA5:
 		.word	0x0a60
 
