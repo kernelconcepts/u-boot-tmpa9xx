@@ -23,8 +23,8 @@
 #define __CONFIG_H
 
 /* Tonga2 Board */
-#define TONGA2_SD
-#define MACH_TYPE MACH_TYPE_TONGA
+#define TONGA2_TFTTIMER
+#define MACH_TYPE MACH_TYPE_TONGA2_TFTTIMER
 
 #define CONFIG_SKIP_LOWLEVEL_INIT	
 #define CONFIG_SKIP_RELOCATE_UBOOT
@@ -44,19 +44,6 @@
 /* Serial Driver info: UART0 for console  */
 #define	CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE      	{ 115200 }
-
-/* SMC911X Config */
-#define CONFIG_SMC911X
-#define CONFIG_SMC911X_BASE         	0x60000000
-#define CONFIG_SMC911X_32_BIT
-#define CONFIG_NET_MULTI
-
-#define CONFIG_IPADDR		    	192.168.1.2
-#define CONFIG_SERVERIP		    	192.168.1.1
-#define CONFIG_ETHADDR			00:11:22:44:55:66 
-/* Enable overwriting MAC Address */
-#define CONFIG_ENV_OVERWRITE
-//#define CONFIG_OVERWRITE_ETHADDR_ONCE
 
 /* NAND */
 #define CONFIG_ENV_OFFSET_OOB
@@ -86,6 +73,7 @@
 #undef CONFIG_CMD_BDI
 #undef CONFIG_CMD_FPGA
 #undef CONFIG_CMD_SETGETDCR
+#undef CONFIG_CMD_NET
 
 #define CONFIG_CMD_JFFS2
 #define CONFIG_JFFS2_NAND
@@ -105,7 +93,7 @@
 
 /* U-Boot general configuration */
 #undef CONFIG_USE_IRQ					/* No IRQ/FIQ in U-Boot */
-#define CONFIG_SYS_PROMPT		"Tonga2_sd>"	/* Monitor Command Prompt */
+#define CONFIG_SYS_PROMPT		"Tonga2_TFTTimer>"	/* Monitor Command Prompt */
 #define CONFIG_SYS_CBSIZE		1024		/* Console I/O Buffer Size  */
 #define CONFIG_SYS_PBSIZE				/* Print buffer size */ \
 					(CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
@@ -122,7 +110,7 @@
                                     	"rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
                                     	"rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\
                                         "videoparams=video=tmpa9xxfb:28050a74:0808290f:01df000b:00010828\0" \
-                                    	"bootargs_base=setenv bootargs console=ttyS0,115200n8 ${rootfs} ${mtdparts} ${videoparams} ethaddr=${ethaddr}\0" \
+                                    	"bootargs_base=setenv bootargs console=ttyS0,115200n8 ${rootfs} ${mtdparts} ${videoparams}\0" \
                                         "setup=" \
                                         "if test -n mtdparts; then " \
                                         	"nand bad;"\

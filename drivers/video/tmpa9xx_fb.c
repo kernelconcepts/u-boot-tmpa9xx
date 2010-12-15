@@ -31,8 +31,13 @@
 
 static unsigned char *framebuffer;
 
-#if defined TONGA2 || defined TONGA2_SD_NO_ETH || defined TONGA2_SD
+#if defined TONGA2
 static unsigned long videoparams[4]={0x19211e4c,0x10040cef,0x013f380d,0x00010828};
+static unsigned int display_bpp=16;
+static unsigned int display_width=320;
+static unsigned int display_height=240;
+#elif defined TONGA2_TFTTIMER || defined TONGA2_TFTTIMER_ETH
+static unsigned long videoparams[4]={0x28050a74,0x0808290f,0x01df000b,0x00010828};
 static unsigned int display_bpp=16;
 static unsigned int display_width=320;
 static unsigned int display_height=240;
@@ -139,7 +144,7 @@ int drv_video_init(void)
 
 	memset(framebuffer,0x00, fbmem_size);
 
-#if defined TONGA2 || defined TONGA2_SD_NO_ETH || defined TONGA2_SD
+#if defined TONGA2 || defined TONGA2_TFTTIMER || defined TONGA2_TFTTIMER_ETH
 	/* Configure Pins and reset LCD */
         GPIOMDIR=3;
         GPIOMFR1=0;
