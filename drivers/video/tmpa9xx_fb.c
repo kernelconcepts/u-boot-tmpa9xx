@@ -161,9 +161,11 @@ int drv_video_init(void)
 	/* Light */
 	GPIOCDATA=0;
         
+#if defined TONGA2_TFTTIMER || defined TONGA2_TFTTIMER_ETH
         /* DE (Display Enable) Pin on Tonga2 board enable */
         GPIOVDIR =(1<<7);
         GPIOVDATA=(1<<7);
+#endif        
 #endif
 
 	if (display_bpp==16)
