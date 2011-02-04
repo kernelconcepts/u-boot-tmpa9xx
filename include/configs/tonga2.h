@@ -105,7 +105,7 @@
 
 /* U-Boot general configuration */
 #undef CONFIG_USE_IRQ					/* No IRQ/FIQ in U-Boot */
-#define CONFIG_SYS_PROMPT		"Tonga2>"	/* Monitor Command Prompt */
+#define CONFIG_SYS_PROMPT		"U-Boot> "	/* Monitor Command Prompt */
 #define CONFIG_SYS_CBSIZE		1024		/* Console I/O Buffer Size  */
 #define CONFIG_SYS_PBSIZE				/* Print buffer size */ \
 					(CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
