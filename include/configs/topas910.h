@@ -105,7 +105,7 @@
 
 /* U-Boot general configuration */
 #undef CONFIG_USE_IRQ					/* No IRQ/FIQ in U-Boot */
-#define CONFIG_SYS_PROMPT		"Topas910>"	/* Monitor Command Prompt */
+#define CONFIG_SYS_PROMPT		"U-Boot> "	/* Monitor Command Prompt */
 #define CONFIG_SYS_CBSIZE		1024		/* Console I/O Buffer Size  */
 #define CONFIG_SYS_PBSIZE				/* Print buffer size */ \
 					(CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
@@ -119,8 +119,8 @@
 #define CONFIG_BOOTARGS 		"mtdparts=physmap-flash.0:512k(bootloader)ro,2048k(kernel),-(root) " \
 					"console=ttyS0,115200n8 root=/dev/mtdblock2 rootfstype=jffs2"
 
-#define CONFIG_EXTRA_ENV_SETTINGS	"update_kernel=dhcp uImage-tonga; nand erase 0x80000 0x300000; nand write ${fileaddr} 0x80000 0x300000\0" \
-					"update_rootfs=dhcp rootfs-tonga; nand erase 0x380000; nand write ${fileaddr} 0x380000 ${filesize}\0"
+#define CONFIG_EXTRA_ENV_SETTINGS	"update_kernel=dhcp uImage-topas910; nand erase 0x80000 0x300000; nand write ${fileaddr} 0x80000 0x300000\0" \
+					"update_rootfs=dhcp rootfs-topas910; nand erase 0x380000; nand write ${fileaddr} 0x380000 ${filesize}\0"
 
 #define CONFIG_CMDLINE_EDITING
 #define CONFIG_VERSION_VARIABLE
