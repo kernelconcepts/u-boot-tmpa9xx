@@ -424,27 +424,27 @@ $(TIMESTAMP_FILE):
 		@LC_ALL=C date +'#define U_BOOT_DATE "%b %d %C%y"' > $@
 		@LC_ALL=C date +'#define U_BOOT_TIME "%T"' >> $@
 
-u_boot_tonga2_nand:
+u_boot_tonga2_nand: $(obj)u-boot.bin
 		@echo "Generating Tonga2 board NAND Flash image"
 		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2.bin $(TOPDIR)/nand_tmpa9xx/autoboot_ddr_16bit.binary $(TOPDIR)/u-boot.bin 2048
 
-u_boot_tonga2_tfttimer_eth_nand:
+u_boot_tonga2_tfttimer_eth_nand: $(obj)u-boot.bin
 		@echo "Generating Tonga2 TFTTimer with Ethernet board NAND Flash image"
 		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_tfttimer_eth.bin $(TOPDIR)/nand_tmpa9xx/autoboot_sd_16bit.binary $(TOPDIR)/u-boot.bin 2048
 
-u_boot_tonga2_tfttimer_nand:
+u_boot_tonga2_tfttimer_nand: $(obj)u-boot.bin
 		@echo "Generating Tonga2 TFTTimer board NAND Flash image"
 		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_tfttimer.bin $(TOPDIR)/nand_tmpa9xx/autoboot_sd_16bit.binary $(TOPDIR)/u-boot.bin 2048
 
-u_boot_topasa900_nand:
+u_boot_topasa900_nand: $(obj)u-boot.bin
 		@echo "Generating Topasa900 board NAND Flash image"
 		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_topasa900.bin $(TOPDIR)/nand_tmpa9xx/autoboot_sd_32bit.binary $(TOPDIR)/u-boot.bin 2048
 
-u_boot_topas910_nand:
+u_boot_topas910_nand: $(obj)u-boot.bin
 		@echo "Generating Topas910 board NAND Flash image"
 		@chmod 700 $(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_topas910.bin $(TOPDIR)/nand_tmpa9xx/autoboot_sd_32bit.binary $(TOPDIR)/u-boot.bin 2048
