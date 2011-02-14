@@ -31,7 +31,7 @@ make topasa900_config
 make
 
 TopasA900 NAND Image:
-make topas900_nand_config
+make topasa900_nand_config
 make
 
 Tonga2 NAND Image:
