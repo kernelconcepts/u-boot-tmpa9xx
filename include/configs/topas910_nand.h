@@ -118,8 +118,8 @@
 
 #define CONFIG_EXTRA_ENV_SETTINGS	"update_kernel=dhcp uImage-topas910; nand erase kernel; nand write ${fileaddr} kernel ${filesize}\0" \
 					"update_rootfs=dhcp rootfs-topas910; nand erase rootfs; nand write ${fileaddr} rootfs ${filesize}\0" \
-                                    "rootfs_jffs2=root=/dev/mtdblock4 rootfstype=jffs2\0" \
-                                    "rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
+                                    "rootfs_jffs2=root=/dev/mtdblock5 rootfstype=jffs2\0" \
+                                    "rootfs_ubifs=ubi.mtd=5 root=ubi0:rootfs rootfstype=ubifs\0" \
                                    	"rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\
                                     "bootargs_base=setenv bootargs console=ttyS0,115200n8 ${rootfs} ${mtdparts}\0" \
                                     "setup=" \
