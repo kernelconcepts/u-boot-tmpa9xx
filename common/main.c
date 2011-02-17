@@ -39,6 +39,7 @@
 #endif
 
 #include <post.h>
+#include <linux/ctype.h>
 
 #if defined(CONFIG_SILENT_CONSOLE) || defined(CONFIG_POST) || defined(CONFIG_CMDLINE_EDITING)
 DECLARE_GLOBAL_DATA_PTR;
@@ -514,7 +515,7 @@ void reset_cmd_timeout(void)
  */
 
 #define putnstr(str,n)	do {			\
-		printf ("%.*s", (int)n, str);	\
+		printf ("%.*s", (int)(n), str);	\
 	} while (0)
 
 #define CTL_CH(c)		((c) - 'a' + 1)
@@ -648,6 +649,20 @@ static void cread_print_hist_list(void)
 			getcmd_putch(CTL_BACKSPACE);	\
 		} while (--eol_num > num);		\
 	}						\
+}
+
+#define ERASE_BACK_N_CHARS(len) {						\
+	if (len && num >= (len)) {						\
+		num -= (len);							\
+		memset(&buf[num], CTL_BACKSPACE, (len));			\
+		putnstr(&buf[num], eol_num-num);				\
+		printf("%*s", (int) (len) , "");				\
+		putnstr(&buf[num], (len));					\
+		memmove(&buf[num], &buf[num+(len)], eol_num-(num+(len)));	\
+		eol_num -= (len);						\
+		for (wlen = eol_num; wlen > num; wlen--)			\
+			getcmd_putch(CTL_BACKSPACE);				\
+        }									\
 }
 
 #define REFRESH_TO_EOL() {			\
@@ -810,17 +825,9 @@ static int cread_line(const char *const prompt, char *buf, unsigned int *len)
 			break;
 		case CTL_CH('d'):
 			if (num < eol_num) {
-				wlen = eol_num - num - 1;
-				if (wlen) {
-					memmove(&buf[num], &buf[num+1], wlen);
-					putnstr(buf + num, wlen);
-				}
-
-				getcmd_putch(' ');
-				do {
-					getcmd_putch(CTL_BACKSPACE);
-				} while (wlen--);
-				eol_num--;
+				getcmd_putch(buf[num]);
+				num++;
+				ERASE_BACK_N_CHARS (1);
 			}
 			break;
 		case CTL_CH('k'):
@@ -837,21 +844,19 @@ static int cread_line(const char *const prompt, char *buf, unsigned int *len)
 			BEGINNING_OF_LINE();
 			ERASE_TO_EOL();
 			break;
+		case CTL_CH('w'):
+			wlen = 0;
+			while (num-wlen > 0 && isspace (buf[num-wlen-1]))
+				wlen++;
+			while (num-wlen > 0 && !isspace (buf[num-wlen-1]))
+				wlen++;
+
+			ERASE_BACK_N_CHARS (wlen);
+			break;
 		case DEL:
 		case DEL7:
-		case 8:
-			if (num) {
-				wlen = eol_num - num;
-				num--;
-				memmove(&buf[num], &buf[num+1], wlen);
-				getcmd_putch(CTL_BACKSPACE);
-				putnstr(buf + num, wlen);
-				getcmd_putch(' ');
-				do {
-					getcmd_putch(CTL_BACKSPACE);
-				} while (wlen--);
-				eol_num--;
-			}
+		case '\b':
+			ERASE_BACK_N_CHARS (1);
 			break;
 		case CTL_CH('p'):
 		case CTL_CH('n'):
