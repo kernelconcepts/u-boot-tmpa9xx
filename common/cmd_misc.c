@@ -53,3 +53,16 @@ U_BOOT_CMD(
 	"N\n"
 	"    - delay execution for N seconds (N is _decimal_ !!!)"
 );
+
+int do_sync (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+{
+	printf ("... watch how I soar.\n");
+	return 0;
+}
+
+U_BOOT_CMD(
+	sync ,    1,    1,     do_sync,
+	"NOP for improving serenity",
+	"\n"
+	"    - delivers some peace of mind."
+);
