@@ -124,7 +124,7 @@
                                     	"rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
                                     	"rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\
                                         "videoparams=video=tmpa9xxfb:19211e4c:10040cef:013f380d:00010928\0" \
-                                    	"bootargs_base=setenv bootargs console=ttyS0,115200n8 ${rootfs} ${mtdparts} ${videoparams} ethaddr=${ethaddr}\0" \
+                                    	"bootargs_base=setenv bootargs console=ttyS0,115200n8 consoleblank=0 ${rootfs} ${mtdparts} ${videoparams} ethaddr=${ethaddr}\0" \
                                         "setup=" \
                                         "if test -n mtdparts; then " \
                                         	"nand bad;"\

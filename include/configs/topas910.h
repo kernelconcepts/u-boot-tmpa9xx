@@ -117,7 +117,7 @@
 #define CONFIG_BOOTDELAY		1
 #define CONFIG_BOOTCOMMAND		"bootm 0x20800000"
 #define CONFIG_BOOTARGS 		"mtdparts=physmap-flash.0:512k(bootloader)ro,2048k(kernel),-(root) " \
-					"console=ttyS0,115200n8 root=/dev/mtdblock2 rootfstype=jffs2"
+					"console=ttyS0,115200n8 consoleblank=0 root=/dev/mtdblock2 rootfstype=jffs2"
 
 #define CONFIG_EXTRA_ENV_SETTINGS	"update_kernel=dhcp uImage-topas910; nand erase 0x80000 0x300000; nand write ${fileaddr} 0x80000 0x300000\0" \
 					"update_rootfs=dhcp rootfs-topas910; nand erase 0x380000; nand write ${fileaddr} 0x380000 ${filesize}\0"
