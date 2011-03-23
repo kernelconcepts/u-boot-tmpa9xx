@@ -396,7 +396,8 @@ void env_relocate_spec (void)
 	if (!ret)
 		printf("Found Environment offset in OOB..\n");
 	else
-		return use_default();
+		nand_env_oob_offset = CONFIG_SYS_ENV_OFFSET;
+//		return use_default();
 #endif
 
 	ret = readenv(CONFIG_ENV_OFFSET, (u_char *) env_ptr);
