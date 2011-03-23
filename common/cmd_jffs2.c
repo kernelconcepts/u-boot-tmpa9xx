@@ -681,6 +681,5 @@ U_BOOT_CMD(
        "\n"
        "    - sets 'mtdparts' according to BBT\n"
 );
-#endif /* CONFIG_NAND_DYNPART */);
+#endif /* CONFIG_NAND_DYNPART */
 /***************************************************/
-

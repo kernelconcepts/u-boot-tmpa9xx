@@ -74,7 +74,6 @@ void set_timer (ulong t)
 void __udelay (unsigned long usec)
 {
 	ulong tmo, tmp;
-	ulong sec_num, nsec_num;
 
 	if(usec >= 1000){		/* if "big" number, spread normalization to seconds */
 		tmo = usec / 1000;	/* start to normalize for usec to ticks per sec */
