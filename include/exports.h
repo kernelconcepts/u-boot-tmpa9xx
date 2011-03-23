@@ -35,6 +35,8 @@ int i2c_read (uchar, uint, int , uchar* , int);
 #endif
 #include <spi.h>
 
+int run_command	(const char *, int );
+
 void app_startup(char * const *);
 
 #endif    /* ifndef __ASSEMBLY__ */
@@ -47,7 +49,7 @@ enum {
 	XF_MAX
 };
 
-#define XF_VERSION	6
+#define XF_VERSION	7
 
 #if defined(CONFIG_I386)
 extern gd_t *global_data;
