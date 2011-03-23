@@ -23,7 +23,12 @@
  */
 
 #include <common.h>
+#include <netdev.h>
 #include "asm/arch-tmpa9xx/tmpa9xx.h"
+
+#define NAND_SIZE    0x10000000 /* 256 MB NAND Flash */
+#define KERNEL_SIZE  0x00300000	/* keep some spare for further kernel development */
+#define SPLASH_SIZE  0x00300000	/* enought for 1024x768x32 */
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -127,12 +132,22 @@ int dram_init (void)
 
 #ifdef CONFIG_NAND_DYNPART
 unsigned int dynpart_size[] = {
-    0x00060000,	/* u-boot normally only needs 2 blocks, keep one more for further development */
-    0x00020000,	/* one page for the u-boot environment */
-    0x00300000,	/* enought for 1024x768x32 */
-    0x00300000,	/* keep some spare for further kernel development */
-    0x10000000-0x00060000-0x00020000-0x00300000-0x00300000,	/* rest of nand */
-    NULL };
+    CONFIG_SYS_ENV_OFFSET,      /* before is (size of) u-boot */
+
+    CONFIG_SYS_ENV_SECT_SIZE,   /* one page for the u-boot environment */
+
+    SPLASH_SIZE,
+
+    KERNEL_SIZE,
+    
+    NAND_SIZE-
+    CONFIG_SYS_ENV_OFFSET-
+    CONFIG_SYS_ENV_SECT_SIZE-
+    SPLASH_SIZE-
+    KERNEL_SIZE,                /* rest of nand */
+    
+    0 };
+    
 char *dynpart_names[] = {
     "u-boot",
     "u-boot_env",
