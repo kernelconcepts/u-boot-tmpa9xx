@@ -1,7 +1,6 @@
 /*
  * (C) Copyright 2009,2010
- * Kernel Concepts <www.kernelconcepts.de>
- * Florian Boor (florian.boor@kernelconcepts.de)
+ * Thomas Haase (Thomas.Haase@web.de)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -10,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.         See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -18,131 +17,46 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
  */
-
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
 /* Topasa 910 Evaluation Board */
 #define TOPAS_910
 #define MACH_TYPE MACH_TYPE_TOPAS910
-
-#undef  CONFIG_SYS_NO_FLASH		
-#define CONFIG_SYS_CONSOLE_INFO_QUIET
-
-/* SoC Configuration */
-#define CONFIG_ARM926EJS				/* arm926ejs CPU */
-#define CONFIG_SYS_HZ			32000
 #define CONFIG_SOC_TMPA910
 
 /* Memory Info */
-#define CONFIG_NR_DRAM_BANKS		1
-#define PHYS_SDRAM_1			0x40000000
-#define PHYS_SDRAM_1_SIZE		0x04000000	/* 64MB */
+#define PHYS_SDRAM_1_SIZE                   0x04000000     /* 64MB */
 
-/* Serial Driver info: UART0 for console  */
-#define	CONFIG_BAUDRATE			115200
-#define CONFIG_SYS_BAUDRATE_TABLE      	{ 115200 }
+/* Flash usage */
+#define USE_NAND
+#define USE_NOR
+#define BOOT_NOR
 
-/* Ethernet:  external DM9000 */
-#define CONFIG_DRIVER_DM9000        	1
-#define CONFIG_DM9000_BASE          	0x60000000
-#define CONFIG_DM9000_USE_16BIT     	1
-#define DM9000_IO                   	CONFIG_DM9000_BASE
-#define DM9000_DATA		    	(CONFIG_DM9000_BASE+0x1000)
-#define CONFIG_NET_MULTI
+/* Ethernet */
+#define USE_DM9000
 
-#define CONFIG_IPADDR		    	192.168.1.2
-#define CONFIG_SERVERIP		    	192.168.1.1
+/* MTD Definitions */
+#define MTDIDS_DEFAULT                      "nor0=physmap-flash.0,nand0=tmpa9xx-nand"
+#define MTDPARTS_DEFAULT                    "mtdparts=physmap-flash.0:0x00080000(u-boot),0x00020000(u-boot_env),0x00300000(splash),0x00300000(kernel),-(rootfs);tmpa9xx-nand:-(storage)"
 
-/* NAND */
-#define CONFIG_SYS_NAND_USE_FLASH_BBT
-#define CONFIG_SYS_NAND_PAGE_2K
-#define CONFIG_SYS_NAND_LARGEPAGE
-#define CONFIG_SYS_NAND_BASE_LIST	{ 0x00000000, }
-#define CONFIG_SYS_MAX_NAND_DEVICE	1
-#define CONFIG_SYS_NAND_MAX_CHIPS	1
+/* Enviroment vaiables */
+#define CONFIG_BOOTCOMMAND                  "run rootfs_base;run bootargs_base; bootm 0x203a0000"
 
-/* NOR */
-#define CONFIG_ENV_IS_IN_FLASH
-#undef  CONFIG_ENV_IS_IN_NAND
-#define CONFIG_FLASH_CFI_DRIVER
-#define CONFIG_SYS_FLASH_CFI
-#define CONFIG_SYS_MAX_FLASH_BANKS	1		/* max number of flash banks */
-#define CONFIG_SYS_FLASH_SECT_SZ	0x20000		/* 128KB sect size Spansion Flash */
-#define PHYS_FLASH_1			0x20000000	/* CS0 Base address 	 */
-#define PHYS_FLASH_SIZE			0x2000000	/* Flash size 32MB 	 */
-#define CONFIG_SYS_FLASH_BASE		PHYS_FLASH_1	/* Flash Base for U-Boot */
+#define CONFIG_EXTRA_ENV_SETTINGS           "update_kernel_dhcp=dhcp uImage-topas910; erase nor0,3; protect off nor0,3; cp.b ${fileaddr} 0x203a0000 ${filesize}; protect on nor0,3\0" \
+                                            "update_rootfs_dhcp=dhcp rootfs         ; erase nor0,4; protect off nor0,4; cp.b ${fileaddr} 0x206a0000 ${filesize}; protect on nor0,4\0" \
+                                            "update_kernel_tftp=tftp uImage-topas910; erase nor0,3; protect off nor0,3; cp.b ${fileaddr} 0x203a0000 ${filesize}; protect on nor0,3\0" \
+                                            "update_rootfs_tftp=tftp rootfs         ; erase nor0,4; protect off nor0,4; cp.b ${fileaddr} 0x206a0000 ${filesize}; protect on nor0,4\0" \
+                                            "videoparams=video=tmpa9xxfb:0x0707074c:0x020204ef:0x013f200e:0x0001082A\0" \
+                                            "mtdparts=" MTDPARTS_DEFAULT "\0" \
+                                            "mtdids=" MTDIDS_DEFAULT "\0" \
+                                            "rootfs_jffs2=root=/dev/mtdblock4 rootfstype=jffs2\0" \
+                                            "rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
+                                            "rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\
+                                            "bootargs_base=setenv bootargs console=ttyS0,115200n8 consoleblank=0 ${rootfs} ${mtdparts}\0" \
+                                            "verify=n\0"
 
-#define CONFIG_SYS_MAX_FLASH_SECT	(PHYS_FLASH_SIZE/CONFIG_SYS_FLASH_SECT_SZ)
-#define CONFIG_SYS_ENV_SECT_SIZE	CONFIG_SYS_FLASH_SECT_SZ	/* Env sector Size */
-#define CONFIG_SYS_ENV_OFFSET		(CONFIG_SYS_FLASH_SECT_SZ*3)
-#define CONFIG_ENV_ADDR			(CONFIG_SYS_FLASH_BASE+CONFIG_SYS_ENV_OFFSET)
-#define	CONFIG_ENV_SIZE			CONFIG_SYS_FLASH_SECT_SZ
-
-/* U-Boot command configuration */
-#include <config_cmd_default.h>
-
-#undef CONFIG_CMD_BDI
-#undef CONFIG_CMD_FPGA
-#undef CONFIG_CMD_SETGETDCR
-
-#define CONFIG_CMD_JFFS2
-#define	CONFIG_CMD_ENV
-#define CONFIG_CMD_FLASH
-#define CONFIG_CMD_ASKENV
-#define CONFIG_CMD_PING
-#define CONFIG_CMD_SAVES
-#define CONFIG_CMD_MTDPARTS
-#define CONFIG_MTD_PARTITIONS
-#define CONFIG_MTD_DEVICE
-#define CONFIG_CMD_NAND
-#define CONFIG_CMD_UBI
-#define CONFIG_RBTREE
-#define CONFIG_CMD_DHCP
-
-#define CONFIG_CRC32_VERIFY
-#define CONFIG_MX_CYCLIC
-
-/* U-Boot general configuration */
-#undef CONFIG_USE_IRQ					/* No IRQ/FIQ in U-Boot */
-#define CONFIG_SYS_PROMPT		"U-Boot> "	/* Monitor Command Prompt */
-#define CONFIG_SYS_CBSIZE		1024		/* Console I/O Buffer Size  */
-#define CONFIG_SYS_PBSIZE				/* Print buffer size */ \
-					(CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
-#define CONFIG_SYS_MAXARGS		16		/* max number of command args */
-#define CONFIG_SYS_HUSH_PARSER
-#define CONFIG_SYS_PROMPT_HUSH_PS2	">"
-#define CONFIG_SYS_LONGHELP
-
-#define CONFIG_BOOTDELAY		1
-#define CONFIG_BOOTCOMMAND		"bootm 0x20800000"
-#define CONFIG_BOOTARGS 		"mtdparts=physmap-flash.0:512k(bootloader)ro,2048k(kernel),-(root) " \
-					"console=ttyS0,115200n8 consoleblank=0 root=/dev/mtdblock2 rootfstype=jffs2"
-
-#define CONFIG_EXTRA_ENV_SETTINGS	"update_kernel=dhcp uImage-topas910; nand erase 0x80000 0x300000; nand write ${fileaddr} 0x80000 0x300000\0" \
-					"update_rootfs=dhcp rootfs-topas910; nand erase 0x380000; nand write ${fileaddr} 0x380000 ${filesize}\0"
-
-#define CONFIG_CMDLINE_EDITING
-#define CONFIG_VERSION_VARIABLE
-#define CONFIG_TIMESTAMP
-
-#define CONFIG_NET_RETRY_COUNT 10
-
-/* U-Boot memory configuration */
-
-#define	CONFIG_STACKSIZE		(64 * 1024)
-#define	CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + 512*1024)
-#define CONFIG_SYS_GBL_DATA_SIZE	128		/* for initial data */
-#define CONFIG_SYS_MEMTEST_START	0x04100000
-#define CONFIG_SYS_MEMTEST_END		0x04F00000
-
-/* Linux interfacing */
-#define CONFIG_CMDLINE_TAG
-#define	LINUX_BOOT_PARAM_ADDR		0x40000100
-#define CONFIG_SETUP_MEMORY_TAGS
-#define	CONFIG_SYS_CBSIZE		1024
-#define	CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
-#define	CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
-#define	CONFIG_SYS_LOAD_ADDR		0x40600000
+/* Include generic part */
+#include "tmpa9xx-generic.h"
 
 #endif
