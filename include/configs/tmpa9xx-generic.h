@@ -144,11 +144,14 @@
 #define CONFIG_CMD_UBI
 #define CONFIG_CMD_BMP
 #define CONFIG_CMD_MEMORY
-#define CONFIG_CMD_NET
-#define CONFIG_CMD_PING
-#define CONFIG_CMD_DHCP
 #define CONFIG_CMD_RUN
 #define CONFIG_CMD_BOOTD
+
+#if defined USE_DM9000 || defined USE_SMCS91XX
+#define CONFIG_CMD_PING
+#define CONFIG_CMD_NET
+#define CONFIG_CMD_DHCP
+#endif /* defined USE_DM9000 || defined USE_SMCS91XX */
 
 #if defined USE_NAND || defined USE_NOR
 #define CONFIG_CMD_SAVEENV
