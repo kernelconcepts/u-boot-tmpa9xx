@@ -19,8 +19,11 @@
  * MA 02111-1307 USA
  */
 
+
 #include <config.h>
 #include <asm/arch/tmpa9xx.h>
+
+#ifndef CONFIG_SKIP_LOWLEVEL_INIT
 
 .globl	lowlevel_init
 lowlevel_init:
@@ -268,5 +271,6 @@ SYSCR4SET:	.word		(0x65)
 CLKCR5SET:	.word		(0x40)
 BOARD_LED_REG:	.word		(0xF08013FC)
 
+#endif /* CONFIG_SKIP_LOWLEVEL_INIT */
 
 
