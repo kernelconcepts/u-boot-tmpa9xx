@@ -21,7 +21,7 @@
 #define __CONFIG_H
 
 /* Tonga2 TFTTimerBoard */
-#define TONGA2_TFTTIMER_ETH
+#define TONGA2_TFTTIMER
 #define MACH_TYPE MACH_TYPE_TONGA2_TFTTIMER
 #define CONFIG_SOC_TMPA900
 
