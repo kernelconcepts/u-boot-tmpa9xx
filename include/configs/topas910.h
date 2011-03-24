@@ -27,6 +27,7 @@
 
 /* Memory Info */
 #define PHYS_SDRAM_1_SIZE                   0x04000000     /* 64MB */
+#define BURST4                                             /* Set Burst Mode to 4 */
 
 /* Flash usage */
 #define USE_NAND

@@ -37,7 +37,7 @@ lowlevel_init:
 	ldr	r1, =SYSCR2
 	ldr	r0, [r1]
 	ands	r0, r0, #01
-	beq     ddr_setup	
+	beq     setup
 	/* autoboot already initialized PLL and DDR for us.
 	 * Needn't change it here.
 	 */
@@ -45,7 +45,7 @@ lowlevel_init:
 
 	mov	pc, lr
 
-ddr_setup:
+setup:
 	/* system PLL setting */
 	ldr	r0, SYSCR0SET
 	ldr	r1, =SYSCR0
@@ -224,16 +224,36 @@ DMC_ADDR:
 		.word	0xf4300000
 DMC_DATA0:
 		.word	0x10a
-DMC_DATA1:
-		.word	0x08011
 DMC_DATA2:
 		.word	0x140fc
 DMC_DATA3:
 		.word	0xff00
-DMC_DATA4:
-		.word	0x80031
 DMC_DATA5:
 		.word	0x0a60
+
+#if   defined BURST1
+DMC_DATA1:
+		.word	0x00011
+DMC_DATA4:
+		.word	0x80030
+#elif defined BURST2
+DMC_DATA1:
+		.word	0x08011
+DMC_DATA4:
+		.word	0x80031
+#elif defined BURST4
+DMC_DATA1:
+		.word	0x10011
+DMC_DATA4:
+		.word	0x80032
+#elif defined BURST8
+DMC_DATA1:
+		.word	0x18011
+DMC_DATA4:
+		.word	0x80033
+#else
+#error "Unknown burst setting"
+#endif
 
 /* BIT1: DRVOSC_H, BIT3: EXTIN_H, BIT5: XEN, BIT6,7: USBCLKSEL */
 SYSCR0SET:	.word		(0x62)
