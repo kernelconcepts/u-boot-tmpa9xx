@@ -19,7 +19,7 @@ the Tonga2 board only has NAND Flash available.
 
 
 Topas910 NOR Image:
-make topas910_config
+make topas910_nor_config
 make
 
 Topas910 NAND Image:
@@ -27,7 +27,7 @@ make topas910_nand_config
 make
 
 TopasA900 NOR Image:
-make topasa900_config
+make topasa900_nor_config
 make
 
 TopasA900 NAND Image:

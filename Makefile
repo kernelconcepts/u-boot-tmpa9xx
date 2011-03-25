@@ -2203,9 +2203,9 @@ edb9315_config \
 edb9315a_config: unconfig
 	@$(MKCONFIG) -n $@ -t $(@:_config=) edb93xx arm arm920t edb93xx - ep93xx
         
-topas910_config \
+topas910_nor_config \
 topas910_nand_config \
-topasa900_config \
+topasa900_nor_config \
 topasa900_nand_config \
 tonga2_config \
 tonga2_tfttimer_eth_config \
