@@ -45,6 +45,7 @@ struct tmpa9xx_nand_private {
         unsigned int spare_size;
 	unsigned int column;
 	unsigned int page_addr;
+        unsigned int rndout;
 	struct tmpa9xx_nand_timing timing;
 };
 
@@ -269,9 +270,18 @@ static void tmpa9xx_nand_read_buf(struct mtd_info *mtd, u_char *buf, int len)
         else
         {
 	       	int i;
- 		tmpa9xx_nand_set_cmd(NAND_CMD_READ0);
-		tmpa9xx_nand_set_addr(priv->column,priv->page_addr);
-		tmpa9xx_nand_set_cmd(NAND_CMD_READSTART);
+                if (priv->rndout==0)
+                {
+	 		tmpa9xx_nand_set_cmd(NAND_CMD_READ0);
+			tmpa9xx_nand_set_addr(priv->column,priv->page_addr);
+			tmpa9xx_nand_set_cmd(NAND_CMD_READSTART);
+                }
+                else
+                {
+	 		tmpa9xx_nand_set_cmd(NAND_CMD_RNDOUT);
+			tmpa9xx_nand_set_addr(priv->column,-1);
+			tmpa9xx_nand_set_cmd(NAND_CMD_RNDOUTSTART);
+                }
 		tmpa9xx_nand_set_rw_mode(1);
 		while(!tmpa9xx_nand_dev_ready(mtd));
 		for (i=0;i < len;i++)
@@ -515,34 +525,41 @@ static void tmpa9xx_nand_command (struct mtd_info *mtd, unsigned command, int co
 	switch (command)
 	{
 	case NAND_CMD_READ0:
+        	priv->rndout=0;
                 priv->column=column;
                 priv->page_addr=page_addr;
 		break;
 	
 	case NAND_CMD_PAGEPROG:
+        	priv->rndout=0;
 		tmpa9xx_nand_set_cmd(NAND_CMD_PAGEPROG);
 		break;
 
 	case NAND_CMD_READOOB:
+        	priv->rndout=0;
 		priv->column=priv->page_size;
                 priv->page_addr=page_addr;
 		break;
 
 	case NAND_CMD_ERASE1:
+        	priv->rndout=0;
 		tmpa9xx_nand_set_cmd(NAND_CMD_ERASE1);
 		tmpa9xx_nand_set_addr(-1,page_addr);
 		break;
 
 	case NAND_CMD_STATUS:
+        	priv->rndout=0;
 		tmpa9xx_nand_set_cmd(NAND_CMD_STATUS);
 		break;
 
 	case NAND_CMD_SEQIN:
+        	priv->rndout=0;
                 priv->column=column;
                 priv->page_addr=page_addr;
 		break;
 
 	case NAND_CMD_READID:
+        	priv->rndout=0;
 		tmpa9xx_nand_set_cmd(NAND_CMD_READID);
 		NDFMCR0 |= NDFMCR0_ALE |NDFMCR0_WE;
 		NDFDTR = 0x00;
@@ -551,17 +568,25 @@ static void tmpa9xx_nand_command (struct mtd_info *mtd, unsigned command, int co
 		break;
 
 	case NAND_CMD_ERASE2:
+        	priv->rndout=0;
 		tmpa9xx_nand_set_cmd(NAND_CMD_ERASE2);
 		break;
 
 	case NAND_CMD_RESET:
+        	priv->rndout=0;
 		tmpa9xx_nand_set_cmd(NAND_CMD_RESET);
 		break;
 
 	case NAND_CMD_READSTART:
+        	priv->rndout=0;
 		tmpa9xx_nand_set_cmd(NAND_CMD_READSTART);
 		break;
                 
+	case NAND_CMD_RNDOUT:
+        	priv->rndout=1;
+                priv->column=column;
+		break;
+
 	case NAND_CMD_RNDOUTSTART:
 		printf("NAND_CMD_RNDOUTSTART unsupported\n");
 		break;
@@ -572,10 +597,6 @@ static void tmpa9xx_nand_command (struct mtd_info *mtd, unsigned command, int co
 
 	case NAND_CMD_READ1:
 		printf("NAND_CMD_READ1 unsupported\n");
-		break;
-
-	case NAND_CMD_RNDOUT:
-		printf("NAND_CMD_RNDOUT unsupported\n");
 		break;
 
 	case NAND_CMD_RNDIN:
@@ -640,8 +661,12 @@ int board_nand_init(struct nand_chip *nand)
 	nand->IO_ADDR_W     = (void  __iomem *)(&NDFDTR);
 	
 	nand->chip_delay    = 0;
-
-	/* Control Functions */
+#ifdef CONFIG_SYS_NAND_USE_FLASH_BBT
+	nand->options	   |= NAND_USE_FLASH_BBT;
+#endif
+	nand->options	   |= NAND_NO_SUBPAGE_WRITE;
+ 
+ 	/* Control Functions */
 	nand->select_chip   = tmpa9xx_nand_select_chip;
 	nand->cmdfunc       = tmpa9xx_nand_command;
 	nand->dev_ready     = tmpa9xx_nand_dev_ready;

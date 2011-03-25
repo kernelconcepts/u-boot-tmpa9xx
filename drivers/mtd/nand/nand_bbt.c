@@ -1134,9 +1134,14 @@ static uint8_t mirror_pattern[] = {'1', 't', 'b', 'B' };
 static struct nand_bbt_descr bbt_main_descr = {
 	.options = NAND_BBT_LASTBLOCK | NAND_BBT_CREATE | NAND_BBT_WRITE
 		| NAND_BBT_2BIT | NAND_BBT_VERSION | NAND_BBT_PERCHIP,
+#if (defined CONFIG_SOC_TMPA910 || defined CONFIG_SOC_TMPA900)
+	.offs =	16,
+	.veroffs = 20,
+#else
 	.offs =	8,
-	.len = 4,
 	.veroffs = 12,
+#endif
+	.len = 4,
 	.maxblocks = 4,
 	.pattern = bbt_pattern
 };
@@ -1144,9 +1149,14 @@ static struct nand_bbt_descr bbt_main_descr = {
 static struct nand_bbt_descr bbt_mirror_descr = {
 	.options = NAND_BBT_LASTBLOCK | NAND_BBT_CREATE | NAND_BBT_WRITE
 		| NAND_BBT_2BIT | NAND_BBT_VERSION | NAND_BBT_PERCHIP,
+#if (defined CONFIG_SOC_TMPA910 || defined CONFIG_SOC_TMPA900)
+	.offs =	16,
+	.veroffs = 20,
+#else
 	.offs =	8,
-	.len = 4,
 	.veroffs = 12,
+#endif
+	.len = 4,
 	.maxblocks = 4,
 	.pattern = mirror_pattern
 };
