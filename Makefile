@@ -2501,6 +2501,7 @@ clean:
 	       $(obj)examples/standalone/atmel_df_pow2			  \
 	       $(obj)examples/standalone/eepro100_eeprom		  \
 	       $(obj)examples/standalone/hello_world			  \
+               $(obj)examples/standalone/hw_test			  \
 	       $(obj)examples/standalone/interrupt			  \
 	       $(obj)examples/standalone/mem_to_mem_idma2intr		  \
 	       $(obj)examples/standalone/sched				  \
