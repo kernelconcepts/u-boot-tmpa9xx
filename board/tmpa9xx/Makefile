@@ -24,7 +24,7 @@
 
 include $(TOPDIR)/config.mk
 
-LIB	= $(obj)lib$(BOARD).a
+LIB	= $(obj)libtmpa9xx.o
 
 COBJS	:= tmpa9xx.o
 

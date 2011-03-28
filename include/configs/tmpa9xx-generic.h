@@ -30,6 +30,20 @@
 #define CONFIG_NR_DRAM_BANKS                1
 #define PHYS_SDRAM_1                        0x40000000
 
+
+#define CONFIG_SYS_SDRAM_BASE               PHYS_SDRAM_1
+#define CONFIG_SYS_INIT_RAM_SIZE            0x1000
+#define CONFIG_SYS_INIT_SP_ADDR             (CONFIG_SYS_SDRAM_BASE + \
+                                             CONFIG_SYS_INIT_RAM_SIZE - \
+                                             GENERATED_GBL_DATA_SIZE)
+
+#if( PHYS_SDRAM_1_SIZE == 0x04000000)
+#define CONFIG_SYS_TEXT_BASE                0x43F00000
+#else
+#define CONFIG_SYS_TEXT_BASE                0x41F00000
+#endif
+                                             
+
 /* Serial Driver info: UART0 for console  */
 #define CONFIG_BAUDRATE                     115200
 #define CONFIG_SYS_BAUDRATE_TABLE           { 115200 }
@@ -102,7 +116,6 @@
 /* NOR */
 #define CONFIG_FLASH_CFI_DRIVER
 #define CONFIG_SYS_FLASH_CFI
-#define CONFIG_SYS_FLASH_CFI_WIDTH          FLASH_CFI_16BIT
 #define CONFIG_FLASH_CFI_MTD
 #define CONFIG_SYS_MAX_FLASH_BANKS          1              /* max number of flash banks */
 #define CONFIG_SYS_FLASH_BASE               0x20000000     /* CS0 Base */

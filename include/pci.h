@@ -511,6 +511,7 @@ extern int pci_hose_write_config_word_via_dword(struct pci_controller *hose,
 extern void *pci_map_bar(pci_dev_t pdev, int bar, int flags);
 extern void pci_register_hose(struct pci_controller* hose);
 extern struct pci_controller* pci_bus_to_hose(int bus);
+extern struct pci_controller *find_hose_by_cfg_addr(void *cfg_addr);
 
 extern int pci_hose_scan(struct pci_controller *hose);
 extern int pci_hose_scan_bus(struct pci_controller *hose, int bus);
@@ -536,6 +537,7 @@ extern int pci_hose_config_device(struct pci_controller *hose,
 				  pci_addr_t mem,
 				  unsigned long command);
 
+const char * pci_class_str(u8 class);
 int pci_last_busno(void);
 
 #ifdef CONFIG_MPC824X
