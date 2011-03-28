@@ -264,7 +264,7 @@ int video_display_bitmap (ulong bmp_image, int x, int y)
             (bmp_height!= display_height) ||
             (bmp_bpp   != display_bpp))
         {
-        	printf("Splash Scrren doesn't fit to display!\n");
+        	printf("Splash Screen doesn't fit to display!\n");
                 printf("Display: Width:%u Height: %u BPP: %u\n",display_width,display_height,display_bpp);
                 printf("Splash:  Width:%u Height: %u BPP: %u\n",bmp_width,bmp_height,bmp_bpp);
         }
