@@ -428,15 +428,15 @@ $(TIMESTAMP_FILE):
 		@LC_ALL=C date +'#define U_BOOT_DATE "%b %d %C%y"' > $@
 		@LC_ALL=C date +'#define U_BOOT_TIME "%T"' >> $@
 
-u_boot_tonga2_nand: $(obj)u-boot.bin
+u_boot_tonga2: $(obj)u-boot.bin
 		@echo "Generating Tonga2 board NAND Flash image"
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2.bin $(TOPDIR)/nand_tmpa9xx/autoboot_ddr_16bit.binary $(TOPDIR)/u-boot.bin 2048
 
-u_boot_tonga2_tfttimer_eth_nand: $(obj)u-boot.bin
+u_boot_tonga2_tfttimer_eth: $(obj)u-boot.bin
 		@echo "Generating Tonga2 TFTTimer with Ethernet board NAND Flash image"
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_tfttimer_eth.bin $(TOPDIR)/nand_tmpa9xx/autoboot_sd_16bit.binary $(TOPDIR)/u-boot.bin 2048
 
-u_boot_tonga2_tfttimer_nand: $(obj)u-boot.bin
+u_boot_tonga2_tfttimer: $(obj)u-boot.bin
 		@echo "Generating Tonga2 TFTTimer board NAND Flash image"
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_tfttimer.bin $(TOPDIR)/nand_tmpa9xx/autoboot_sd_16bit.binary $(TOPDIR)/u-boot.bin 2048
 
