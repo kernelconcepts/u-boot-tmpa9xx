@@ -48,7 +48,7 @@
                                             "update_rootfs_dhcp=dhcp rootfs         ; erase nor0,4; protect off nor0,4; cp.b ${fileaddr} 0x206a0000 ${filesize}; protect on nor0,4\0" \
                                             "update_kernel_tftp=tftp uImage-topas910; erase nor0,3; protect off nor0,3; cp.b ${fileaddr} 0x203a0000 ${filesize}; protect on nor0,3\0" \
                                             "update_rootfs_tftp=tftp rootfs         ; erase nor0,4; protect off nor0,4; cp.b ${fileaddr} 0x206a0000 ${filesize}; protect on nor0,4\0" \
-                                            "videoparams=video=tmpa9xxfb:0x0707074c:0x020204ef:0x013f200e:0x0001082A\0" \
+                                            "videoparams=video=tmpa9xxfb:0707074c:020204ef:013f200e:0001082A\0" \
                                             "mtdparts=" MTDPARTS_DEFAULT "\0" \
                                             "mtdids=" MTDIDS_DEFAULT "\0" \
                                             "rootfs_jffs2=root=/dev/mtdblock4 rootfstype=jffs2\0" \

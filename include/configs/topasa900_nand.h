@@ -49,7 +49,7 @@
                                             "rootfs_jffs2=root=/dev/mtdblock5 rootfstype=jffs2\0" \
                                             "rootfs_ubifs=ubi.mtd=5 root=ubi0:rootfs rootfstype=ubifs\0" \
                                             "rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\
-                                            "videoparams=video=tmpa9xxfb:0x0707074c:0x020204ef:0x013f200e:0x0001082A\0" \
+                                            "videoparams=video=tmpa9xxfb:0707074c:020204ef:013f200e:0001082A\0" \
                                             "bootargs_base=setenv bootargs console=ttyS0,115200n8 consoleblank=0 ${rootfs} ${mtdparts}\0" \
                                             "verify=n\0" \
                                             "setup=" \
