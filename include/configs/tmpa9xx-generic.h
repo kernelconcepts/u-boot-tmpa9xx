@@ -100,6 +100,8 @@
 #define CONFIG_SYS_MAX_NAND_DEVICE          1
 #define CONFIG_SYS_NAND_MAX_CHIPS           1
 #define CFG_MAX_NAND_DEVICE                 CONFIG_SYS_NAND_MAX_CHIPS
+
+#define CONFIG_CMD_NAND
 #endif /* USE_NAND */
 
 /* Reconfigure some stuff if booting from NOR is selected */
@@ -122,9 +124,20 @@
 #define CONFIG_SYS_MAX_FLASH_SECT           512
 #define CONFIG_ENV_ADDR                     (CONFIG_SYS_FLASH_BASE+CONFIG_SYS_ENV_OFFSET)
 #define CONFIG_SYS_FLASH_USE_BUFFER_WRITE
+
+#define CONFIG_CMD_FLASH
 #else
 #define CONFIG_SYS_NO_FLASH
 #endif /* USE_NOR */
+
+
+#ifdef USE_SPI
+/* SPI */
+#define CONFIG_CMD_SPI
+#define CONFIG_SPI
+#define CONFIG_SOFT_SPI
+
+#endif
 
 /* U-Boot general configuration */
 #define CONFIG_BOOTDELAY                    1
@@ -168,14 +181,6 @@
 #define CONFIG_CMD_SAVEENV
 #define CONFIG_CMD_ENV
 #endif /* defined USE_NAND || defined USE_NOR */
-
-#ifdef USE_NAND
-#define CONFIG_CMD_NAND
-#endif /* USE_NAND */
-
-#ifdef USE_NOR
-#define CONFIG_CMD_FLASH
-#endif /* USE_NOR */
 
 /* U-Boot memory configuration */
 #define CONFIG_STACKSIZE                    (64 * 1024)
