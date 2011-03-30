@@ -37,13 +37,6 @@
                                              CONFIG_SYS_INIT_RAM_SIZE - \
                                              GENERATED_GBL_DATA_SIZE)
 
-#if( PHYS_SDRAM_1_SIZE == 0x04000000)
-#define CONFIG_SYS_TEXT_BASE                0x43F00000
-#else
-#define CONFIG_SYS_TEXT_BASE                0x41F00000
-#endif
-                                             
-
 /* Serial Driver info: UART0 for console  */
 #define CONFIG_BAUDRATE                     115200
 #define CONFIG_SYS_BAUDRATE_TABLE           { 115200 }
@@ -110,6 +103,14 @@
 #undef  CONFIG_ENV_OFFSET_OOB
 #undef  CONFIG_NAND_DYNPART
 #define CONFIG_ENV_IS_IN_FLASH
+#define CONFIG_SYS_TEXT_BASE                0x20000000
+#else
+#if( PHYS_SDRAM_1_SIZE == 0x04000000)
+#define CONFIG_SYS_TEXT_BASE                0x43F00000
+#else
+#define CONFIG_SYS_TEXT_BASE                0x41F00000
+#endif
+
 #endif
 
 #ifdef USE_NOR
