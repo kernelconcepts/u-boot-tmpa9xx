@@ -42,10 +42,10 @@
 #define CONFIG_PREBOOT                      "run setup"
 #define CONFIG_BOOTCOMMAND                  "run rootfs_base;run bootargs_base; nboot kernel; bootm"
 
-#define CONFIG_EXTRA_ENV_SETTINGS           "update_kernel_dhcp=dhcp uImage-topas910; nand erase kernel; nand write ${fileaddr} kernel            \0" \
-                                            "update_rootfs_dhcp=dhcp rootfs         ; nand erase rootfs; nand write ${fileaddr} rootfs ${filesize}\0" \
-                                            "update_kernel_tftp=tftp uImage-topas910; nand erase kernel; nand write ${fileaddr} kernel            \0" \
-                                            "update_rootfs_tftp=tftp rootfs         ; nand erase rootfs; nand write ${fileaddr} rootfs ${filesize}\0" \
+#define CONFIG_EXTRA_ENV_SETTINGS           "update_kernel_dhcp=dhcp uImage-topas910; nand erase.part kernel; nand write ${fileaddr} kernel            \0" \
+                                            "update_rootfs_dhcp=dhcp rootfs         ; nand erase.part rootfs; nand write ${fileaddr} rootfs ${filesize}\0" \
+                                            "update_kernel_tftp=tftp uImage-topas910; nand erase.part kernel; nand write ${fileaddr} kernel            \0" \
+                                            "update_rootfs_tftp=tftp rootfs         ; nand erase.part rootfs; nand write ${fileaddr} rootfs ${filesize}\0" \
                                             "rootfs_jffs2=root=/dev/mtdblock5 rootfstype=jffs2\0" \
                                             "rootfs_ubifs=ubi.mtd=5 root=ubi0:rootfs rootfstype=ubifs\0" \
                                             "rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\
