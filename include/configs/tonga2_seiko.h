@@ -17,7 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
  */
-
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
@@ -32,11 +31,15 @@
 /* Flash usage */
 #define USE_NAND
 
-/* SPI usage */
-#define USE_SPI
-
 /* Ethernet */
 #define USE_SMCS91XX
+
+/* Select Display */
+#define LG4573_480x800_RGB262k_Mode
+#define CONFIG_DISPLAY_SPI_SETUP
+
+/* SPI usage */
+#define USE_SPI
 
 /* MTD Definitions */
 #define MTDIDS_DEFAULT                      "nand0=tmpa9xx-nand"
@@ -52,7 +55,7 @@
                                             "rootfs_jffs2=root=/dev/mtdblock4 rootfstype=jffs2\0" \
                                             "rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
                                             "rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\
-                                            "videoparams=video=tmpa9xxfb:19211e4c:10040cef:013f380d\0" \
+                                            "videoparams=tmpa9xxfb:1c02d6c4:0a0251df:031f2804\0" \
                                             "bootargs_base=setenv bootargs console=ttyS0,115200n8 consoleblank=0 ${rootfs} ${mtdparts} ${videoparams} ethaddr=${ethaddr}\0" \
                                             "verify=n\0" \
                                             "setup=" \

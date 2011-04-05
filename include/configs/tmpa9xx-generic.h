@@ -137,12 +137,15 @@
 #define CONFIG_CMD_SPI
 #define CONFIG_SPI
 #define CONFIG_SOFT_SPI
-
-#endif
+#define SPI_READ                            tmpa_spi_bb_read()
+#define SPI_SDA(bit)                        tmpa_spi_bb_sda(bit)
+#define SPI_SCL(bit)                        tmpa_spi_bb_scl(bit)
+#define SPI_DELAY                           udelay(10);
+#endif /* USE_SPI */
 
 /* U-Boot general configuration */
 #define CONFIG_BOOTDELAY                    1
-#undef CONFIG_USE_IRQ                                      /* No IRQ/FIQ in U-Boot */
+#undef  CONFIG_USE_IRQ                                     /* No IRQ/FIQ in U-Boot */
 #define CONFIG_SYS_PROMPT                   "U-Boot> "     /* Monitor Command Prompt */
 #define CONFIG_SYS_CBSIZE                   1024           /* Console I/O Buffer Size  */
 #define CONFIG_SYS_PBSIZE                                  /* Print buffer size */ \
