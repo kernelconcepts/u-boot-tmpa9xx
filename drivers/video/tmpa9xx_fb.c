@@ -29,6 +29,8 @@
 #include <stdio_dev.h>
 #include <asm/arch/tmpa9xx.h>
 
+extern int setup_spi_display(void);
+
 static unsigned char *framebuffer;
 
 static unsigned long videoparams[4];
@@ -178,7 +180,10 @@ int drv_video_init(void)
 	videodev.putc = NULL;			/* 'putc' function */
 	videodev.puts = NULL;			/* 'puts' function */
 
-	error = stdio_register(&videodev);
+	error  = stdio_register(&videodev);
+#ifdef TONGA2_SEIKO       
+	error |= setup_spi_display();
+#endif        
 
 	return (error == 0) ? 1 : error;
 }
