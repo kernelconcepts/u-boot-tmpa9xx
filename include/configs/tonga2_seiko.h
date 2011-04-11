@@ -66,7 +66,7 @@
                                                "dynpart;"\
                                                "nand env.oob set u-boot_env;"\
                                                "setenv setup;"\
-                                               "setenv preboot;"\
+                                               "setenv preboot 'nand read 0x41000000 splash;bmp display 0x41000000';"\
                                                "saveenv;"\
                                                "reset;"\
                                             "fi\0"
