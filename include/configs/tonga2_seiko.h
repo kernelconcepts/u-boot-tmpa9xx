@@ -35,8 +35,10 @@
 #define USE_SMCS91XX
 
 /* Select Display */
-#define LG4573_480x800_RGB262k_Mode
 #define CONFIG_DISPLAY_SPI_SETUP
+#define DISPLAY_35WVF0HZ2
+
+//#define DISPLAY_32WVF0HZ1
 
 /* SPI usage */
 #define USE_SPI
@@ -48,14 +50,14 @@
 #define CONFIG_PREBOOT                      "run setup"
 #define CONFIG_BOOTCOMMAND                  "run rootfs_base;run bootargs_base; nboot kernel; bootm"
 
-#define CONFIG_EXTRA_ENV_SETTINGS           "update_kernel_dhcp=dhcp uImage-tonga2; nand erase kernel; nand write ${fileaddr} kernel            \0" \
-                                            "update_rootfs_dhcp=dhcp rootfs       ; nand erase rootfs; nand write ${fileaddr} rootfs ${filesize}\0" \
-                                            "update_kernel_tftp=tftp uImage-tonga2; nand erase kernel; nand write ${fileaddr} kernel            \0" \
-                                            "update_rootfs_tftp=tftp rootfs       ; nand erase rootfs; nand write ${fileaddr} rootfs ${filesize}\0" \
+#define CONFIG_EXTRA_ENV_SETTINGS           "update_kernel_dhcp=dhcp uImage-tonga2; nand erase.part kernel; nand write ${fileaddr} kernel            \0" \
+                                            "update_rootfs_dhcp=dhcp rootfs       ; nand erase.part rootfs; nand write ${fileaddr} rootfs ${filesize}\0" \
+                                            "update_kernel_tftp=tftp uImage-tonga2; nand erase.part kernel; nand write ${fileaddr} kernel            \0" \
+                                            "update_rootfs_tftp=tftp rootfs       ; nand erase.part rootfs; nand write ${fileaddr} rootfs ${filesize}\0" \
                                             "rootfs_jffs2=root=/dev/mtdblock4 rootfstype=jffs2\0" \
                                             "rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
                                             "rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\
-                                            "videoparams=tmpa9xxfb:1c02d6c4:0a0251df:031f2804\0" \
+                                            "videoparams=video=tmpa9xxfb:1c020274:0a020b1f:01df0004:00010828\0" \
                                             "bootargs_base=setenv bootargs console=ttyS0,115200n8 consoleblank=0 ${rootfs} ${mtdparts} ${videoparams} ethaddr=${ethaddr}\0" \
                                             "verify=n\0" \
                                             "setup=" \
