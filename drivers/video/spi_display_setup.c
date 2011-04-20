@@ -96,7 +96,7 @@ static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
 
 static void display_reset(int reset)
 {
-	if (reset==0)			/* Signal is low active */
+	if (reset==1)			/* Signal is high active */
 	        GPIOCDATA |=  (1<<4);
 	else                
 	        GPIOCDATA &= ~(1<<4);
@@ -194,14 +194,14 @@ void spi_cs_activate(struct spi_slave *slave)
 	}
 
 	udelay(1);
-        GPIOCDATA &= ~(1<<2);
+        GPIOCDATA |= (1<<2);
 
 }
 
 void spi_cs_deactivate(struct spi_slave *slave)
 {
 
-        GPIOCDATA |=  (1<<2);
+        GPIOCDATA &= ~(1<<2);
         udelay(1);
 
 	switch (bus)
