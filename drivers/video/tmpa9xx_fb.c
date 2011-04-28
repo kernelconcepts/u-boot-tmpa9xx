@@ -161,9 +161,9 @@ int drv_video_init(void)
 #endif        
 #endif
 
-	if (display_bpp==16)
+//	if (display_bpp==16)
         {
-		LCDCOP_STN64CR |= LCDCOP_STN64CR_G64_8bit;
+//		LCDCOP_STN64CR |= LCDCOP_STN64CR_G64_8bit;
 		GPIOJFR2 = 0x00;
 		GPIOJFR1 = 0xFF;
 		GPIOKFR2 = 0x00;
@@ -183,6 +183,12 @@ int drv_video_init(void)
 	error  = stdio_register(&videodev);
 #ifdef TONGA2_SEIKO       
 	error |= setup_spi_display();
+	PMCCTL &= ~PMCCTL_PMCPWE;
+	PMCWV1 |= PMCWV1_PMCCTLV;
+	GPIOJFR2 = 0x00;
+	GPIOJFR1 = 0xFF;
+	GPIOKFR2 = 0x00;
+	GPIOKFR1 = 0xFF;
 #endif        
 
 	return (error == 0) ? 1 : error;
