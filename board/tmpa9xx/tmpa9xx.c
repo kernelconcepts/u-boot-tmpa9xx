@@ -124,14 +124,15 @@ int board_late_init(void)
 void dram_init_banksize(void)
 {
 	gd->bd->bi_dram[0].start = PHYS_SDRAM_1;
-	gd->bd->bi_dram[0].size  = PHYS_SDRAM_1_SIZE;
-        gd->ram_size =  PHYS_SDRAM_1_SIZE;
+	gd->bd->bi_dram[0].size  = PHYS_SDRAM_1_SIZE;  
+	// gd->ram_size =  PHYS_SDRAM_1_SIZE; // already done in dram_init()
 }
 
 int dram_init (void)
 {
-	dram_init_banksize();
-	return 0;
+        //dram_init_banksize(); // disable because gd->bd not yet initialized
+	gd->ram_size =  PHYS_SDRAM_1_SIZE; // added because board.c need it
+        return 0;
 }
 
 #ifdef CONFIG_NAND_DYNPART
