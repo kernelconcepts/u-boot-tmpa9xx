@@ -182,13 +182,13 @@ int drv_video_init(void)
 
 	error  = stdio_register(&videodev);
 #ifdef TONGA2_SEIKO       
-	error |= setup_spi_display();
 	PMCCTL &= ~PMCCTL_PMCPWE;
 	PMCWV1 |= PMCWV1_PMCCTLV;
 	GPIOJFR2 = 0x00;
 	GPIOJFR1 = 0xFF;
 	GPIOKFR2 = 0x00;
 	GPIOKFR1 = 0xFF;
+	error |= setup_spi_display();
 #endif        
 
 	return (error == 0) ? 1 : error;
