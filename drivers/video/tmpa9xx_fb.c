@@ -181,15 +181,19 @@ int drv_video_init(void)
 	videodev.puts = NULL;			/* 'puts' function */
 
 	error  = stdio_register(&videodev);
-#ifdef TONGA2_SEIKO       
+#if defined DISPLAY_35WVF0HZ2 || defined DISPLAY_32WVF0HZ1
 	PMCCTL &= ~PMCCTL_PMCPWE;
 	PMCWV1 |= PMCWV1_PMCCTLV;
 	GPIOJFR2 = 0x00;
 	GPIOJFR1 = 0xFF;
 	GPIOKFR2 = 0x00;
 	GPIOKFR1 = 0xFF;
+#endif        
+
+#ifdef TONGA2_SEIKO
 	error |= setup_spi_display();
 #endif        
+
 
 	return (error == 0) ? 1 : error;
 }

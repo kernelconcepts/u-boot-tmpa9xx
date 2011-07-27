@@ -26,8 +26,8 @@
 #define MAX_HERTZ          200000000
 #define SPI_MODE           SPI_MODE_3
 
-#define MAX_SEQUENCE       30
-#define MAX_VALUE          11
+#define MAX_SEQUENCE       50
+#define MAX_VALUE          30
 
 #include <spi.h>
 #include <config.h>
@@ -38,6 +38,7 @@
 int bus;
 
 #ifdef DISPLAY_32WVF0HZ1
+#define TRANSMIT_BITS 16
 static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
 	{ {0x20,                                              -1},
           {0x3a,0x70,                                         -1},
@@ -66,6 +67,7 @@ static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
 #endif /* 32WVFOH */
 
 #ifdef DISPLAY_35WVF0HZ2
+#define TRANSMIT_BITS 16
 static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
 	{ {0x20,                                              -1},
           {0x3a,0x70,                                         -1},
@@ -93,6 +95,97 @@ static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
 
 #endif /* DISPLAY_35WVF0HZ2 */
 
+#ifdef DISPLAY_35HVF0H
+#define TRANSMIT_BITS 8
+static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
+	{ {0xB0,0x00,                                                                                                -1},
+          {0xC0,0x03,0x3B,0x00,0x03,0x04,0x01,0x00,0xBA,                                                             -1},
+          {0xC1,0x00,0x11,0x04,0x0A,                                                                                 -1},
+          {0xC4,0x11,0x01,0x53,0x05,                                                                                 -1},
+          {0xC6,0x02,                                                                                                -1},
+          {0xC8,0x09,0x0A,0x0B,0x58,0x05,0x05,0x04,0x08,0x00,0x32,0x08,0x0C,0x11,0xE9,0x0F,0x0C,0x13,0x05,0x32,0x11, -1},
+          {0x2A,0x00,0x00,0x01,0x3F,                                                                                 -1},
+          {0x2B,0x00,0x00,0x01,0xDF,                                                                                 -1},
+          {0x34,                                                                                                     -1},
+          {0x3A,0x66,                                                                                                -1},
+          {0xB3,0x02,0x00,0x00,0x00,                                                                                 -1},
+          {0xB4,0x00,                                                                                                -1},
+          {0x11,                                                                                                     -1},
+          {  -2, 120,                                                                                                -1},
+          {0xD0,0x07,0x07,0x19,0x66,                                                                                 -1},
+          {0xD1,0x00,0x26,0x0E,                                                                                      -1},
+          {0xD2,0x03,0x24,0x00,                                                                                      -1},
+          {0xB0,0x00,                                                                                                -1},
+          {0xB3,0x02,0x00,0x00,0x00,                                                                                 -1},
+          {0x36,0x00,                                                                                                -1},
+          {0x2A,0x00,0x00,0x01,0x3F,                                                                                 -1},
+          {0x2B,0x00,0x00,0x01,0xDF,                                                                                 -1},
+          {0xB4,0x11,                                                                                                -1},
+          {  -2,   5,                                                                                                -1},
+          {0x2C,                                                                                                     -1},
+          {  -2,   5,                                                                                                -1},
+          {0x29,                                                                                                     -1},
+          {0x2C,                                                                                                     -1},
+          {  -1                                                                                                        },
+        };
+
+#endif /* DISPLAY_35HVF0H */
+
+#ifdef DISPLAY_30WQF0H
+#define TRANSMIT_BITS 24
+static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
+	{ {0x0000,        -1},
+          {0x0000,        -1},
+          {0x0000,        -1},
+          {0x0000,        -1},
+          {0x0400,0x6200, -1},
+          {0x0401,0x0000, -1},
+          {0x0404,0x0000, -1},
+          {0x0008,0x0404, -1},
+          {0x0300,0x0700, -1},
+          {0x0301,0x570C, -1},
+          {0x0302,0x0C05, -1},
+          {0x0303,0x0405, -1},
+          {0x0304,0x0123, -1},
+          {0x0305,0x0504, -1},
+          {0x0306,0x550C, -1},
+          {0x0307,0x0C07, -1},
+          {0x0308,0x0007, -1},
+          {0x0309,0x3210, -1},
+          {0x0020,0x0015, -1},
+          {0x0021,0x0501, -1},
+          {0x0022,0x0403, -1},
+          {0x0023,0x0002, -1},
+          {0x000B,0x0000, -1},
+          {0x000C,0x0110, -1},
+          {0x000F,0x0002, -1},
+          {0x0100,0x0610, -1},
+          {0x0101,0x0247, -1},
+          {0x0102,0xD180, -1},
+          {0x0103,0x0F00, -1},
+          {0x0001,0x0100, -1},
+          {0x0002,0x0100, -1},
+          {0x0003,0x1030, -1},
+          {0x0007,0x0000, -1},
+          {0x0210,0x0000, -1},
+          {0x0211,0x00EF, -1},
+          {0x0212,0x0000, -1},
+          {0x0213,0x018F, -1},
+          {0x0102,0xD1B0, -1},
+          {    -2,   150, -1}, 
+          {0x0014,0x0076, -1},
+          {0x0200,0x0000, -1},
+          {0x0201,0x0000, -1},
+          {0x0202,        -1},       
+          {0x0007,0x0100, -1},
+          {    -2,   150, -1},
+          {0x0202,        -1},       
+          {    -2,   150, -1},
+          {    -1,          },
+        };
+
+#endif /* DISPLAY_30WQF0H */
+
 
 static void display_reset(int reset)
 {
@@ -104,62 +197,6 @@ static void display_reset(int reset)
 }
 
 static struct spi_slave *slave;
-
-int setup_spi_display(void)
-{
-        int i=0;
-	int ret=0;
-        
-        /* Setup port for RESET & CS of Display */
-	GPIOCDATA=0x14;
-        GPIOCDIR =0x14;
-        GPIOCFR1 =0x00;
-        GPIOCFR2 =0x00;
-
-        display_reset(1);	/* Put display to reset */
-        udelay(10*1000);	/* Wait 10ms */
-        display_reset(0);	/* release reset */
-        udelay(20*1000);	/* Wait 20ms */
-
-
-	if (!slave) {
-		/* FIXME: Verify the max SCK rate */
-		slave = spi_setup_slave(CONFIG_SPI_BUS,CONFIG_SPI_CS,MAX_HERTZ,SPI_MODE);
-		if (!slave)
-			return -1;
-	}
-
-	if (spi_claim_bus(slave))
-		return -1;
-
-
-	while (display_setup[i][0]!=-1)
-        {
-        	unsigned char transfer[4];
-                unsigned char dummy[4];
-                int j=1;
-                
-                memset (transfer,0,4);
-                memset (dummy,0,4);
-                
-        	transfer[0]=0x70;
-                transfer[1]=display_setup[i][0] & 0xff;
-                ret |= spi_xfer(slave, 16, transfer, dummy, SPI_XFER_BEGIN | SPI_XFER_END);
-
-                while (display_setup[i][j]!=-1)
-                {
-               		transfer[0]=0x72;
-                	transfer[1]=display_setup[i][j] & 0xff;
-	                ret |= spi_xfer(slave, 16, transfer, dummy, SPI_XFER_BEGIN | SPI_XFER_END);
-                        j++;
-                }
-                i++;
-        }
-
-	spi_release_bus(slave);
-
-	return ret;
-}
 
 /*
  * The following are used to control the SPI chip selects for the SPI command.
@@ -200,6 +237,7 @@ void spi_cs_activate(struct spi_slave *slave)
 
 void spi_cs_deactivate(struct spi_slave *slave)
 {
+	bus=slave->bus;
 
         GPIOCDATA &= ~(1<<2);
         udelay(1);
@@ -222,6 +260,7 @@ void spi_cs_deactivate(struct spi_slave *slave)
             	printf("Invalid bus selected for deactivate\n");
                 break;
 	}
+
 }
 
 void tmpa_spi_bb_sda(int bit)
@@ -258,7 +297,7 @@ void tmpa_spi_bb_scl(int bit)
                 break;
     	case 1:
         
-		if(bit)
+		if(!bit)
 			GPIOLDATA |=  (1<<1);
 		else
 			GPIOLDATA &= ~(1<<1);
@@ -285,3 +324,162 @@ unsigned char tmpa_spi_bb_read(void)
                 break;
 	}
 }
+
+#ifndef DISPLAY_35HVF0H
+int setup_spi_display(void)
+{
+        int i=0;
+	int ret=0;
+        
+        /* Setup port for RESET & CS of Display */
+	GPIOCDATA=0x10;
+        GPIOCDIR =0x14;
+        GPIOCFR1 =0x00;
+        GPIOCFR2 =0x00;
+
+        display_reset(1);	/* Put display to reset */
+        udelay(10*1000);	/* Wait 10ms */
+        display_reset(0);	/* release reset */
+        udelay(20*1000);	/* Wait 20ms */
+
+
+	if (!slave) {
+		/* FIXME: Verify the max SCK rate */
+		slave = spi_setup_slave(CONFIG_SPI_BUS,CONFIG_SPI_CS,MAX_HERTZ,SPI_MODE);
+		if (!slave)
+			return -1;
+	}
+
+	if (spi_claim_bus(slave))
+		return -1;
+
+
+	while (display_setup[i][0]!=-1)
+        {
+        
+        	unsigned char transfer[4];
+                unsigned char dummy[4];
+                int j=1;
+
+                if (display_setup[i][0]==-2)
+                {
+               		udelay(1000*display_setup[i][j]);
+		}
+                else
+		{
+	                memset (transfer,0,4);
+        	        memset (dummy,0,4);
+                
+	        	transfer[0]=0x70;
+			if (TRANSMIT_BITS==16)
+		                transfer[1]=display_setup[i][0] & 0xff;
+			else
+        	        {
+		                transfer[1]=(display_setup[i][0] >> 8) & 0xff;
+		                transfer[2]=(display_setup[i][0] >> 0) & 0xff;
+			}                                                        
+	                ret |= spi_xfer(slave, TRANSMIT_BITS, transfer, dummy, SPI_XFER_BEGIN | SPI_XFER_END);
+
+	                while (display_setup[i][j]!=-1)
+	                {
+	               		transfer[0]=0x72;
+				if (TRANSMIT_BITS==16)
+			                transfer[1]=display_setup[i][j] & 0xff;
+				else
+		                {
+			                transfer[1]=(display_setup[i][j] >> 8) & 0xff;
+        			        transfer[2]=(display_setup[i][j] >> 0) & 0xff;
+				}                                                        
+		                ret |= spi_xfer(slave, TRANSMIT_BITS, transfer, dummy, SPI_XFER_BEGIN | SPI_XFER_END);
+       		                j++;
+	                }
+	        }
+       	        i++;
+	}
+        
+	spi_release_bus(slave);
+
+	return ret;
+}
+#else
+int setup_spi_display(void)
+{
+        int i=0;
+	int ret=0;
+        
+        /* Setup port for RESET & CS of Display */
+	GPIOCDATA=0x10;
+        GPIOCDIR =0x14;
+        GPIOCFR1 =0x00;
+        GPIOCFR2 =0x00;
+
+        display_reset(1);	/* Put display to reset */
+        udelay(10*1000);	/* Wait 10ms */
+        display_reset(0);	/* release reset */
+        udelay(20*1000);	/* Wait 20ms */
+
+
+	if (!slave) {
+		/* FIXME: Verify the max SCK rate */
+		slave = spi_setup_slave(CONFIG_SPI_BUS,CONFIG_SPI_CS,MAX_HERTZ,SPI_MODE);
+		if (!slave)
+			return -1;
+	}
+
+	if (spi_claim_bus(slave))
+		return -1;
+
+
+	while (display_setup[i][0]!=-1)
+        {
+        
+        	unsigned char transfer[4];
+                unsigned char dummy[4];
+                int j=1;
+
+                if (display_setup[i][0]==-2)
+                {
+               		udelay(1000*display_setup[i][j]);
+		}
+                else
+		{
+	                memset (transfer,0,4);
+        	        memset (dummy,0,4);
+                
+	                transfer[0]=display_setup[i][0] & 0xff;
+			GPIOLDIR = 0x03;
+                        GPIOLDATA= 0x02;
+                        udelay(10);
+		        GPIOCDATA |= (1<<2);
+                        udelay(10);
+                        GPIOLDATA= 0x00;
+                        udelay(10);
+                        GPIOLDATA= 0x02;
+
+	                ret |= spi_xfer(slave, 8, transfer, dummy, SPI_XFER_BEGIN | SPI_XFER_END);
+
+	                while (display_setup[i][j]!=-1)
+	                {
+				GPIOLDIR = 0x03;
+        	                GPIOLDATA= 0x03;
+                	        udelay(10);
+		        	GPIOCDATA |= (1<<2);
+	                        udelay(10);
+        	                GPIOLDATA= 0x01;
+                	        udelay(10);
+                        	GPIOLDATA= 0x03;
+
+		                transfer[0]=display_setup[i][j] & 0xff;
+		                ret |= spi_xfer(slave, 8, transfer, dummy, SPI_XFER_BEGIN | SPI_XFER_END);
+       		                j++;
+	                }
+	        }
+       	        i++;
+	}
+        
+	spi_release_bus(slave);
+
+	return ret;
+}
+#endif //
+

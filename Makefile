@@ -432,8 +432,16 @@ u_boot_tonga2: $(obj)u-boot.bin
 		@echo "Generating Tonga2 board NAND Flash image"
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2.bin $(TOPDIR)/nand_tmpa9xx/autoboot_ddr_16bit.binary $(TOPDIR)/u-boot.bin 2048
 
-u_boot_tonga2_seiko: $(obj)u-boot.bin
-		@echo "Generating Tonga2 TFTTimer board with Seiko Display Adapter NAND Flash image"
+u_boot_tonga2_seiko_WVF0HZ: $(obj)u-boot.bin
+		@echo "Generating Tonga2 TFTTimer board with Seiko WVF0HZ Display Adapter NAND Flash image"
+		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_seiko.bin $(TOPDIR)/nand_tmpa9xx/autoboot_ddr_16bit.binary $(TOPDIR)/u-boot.bin 2048
+
+u_boot_tonga2_seiko_WQF0H: $(obj)u-boot.bin
+		@echo "Generating Tonga2 TFTTimer board with Seiko WQF0H Display Adapter NAND Flash image"
+		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_seiko.bin $(TOPDIR)/nand_tmpa9xx/autoboot_ddr_16bit.binary $(TOPDIR)/u-boot.bin 2048
+
+u_boot_tonga2_seiko_HVF0H: $(obj)u-boot.bin
+		@echo "Generating Tonga2 TFTTimer board with Seiko HVF0H Display Adapter NAND Flash image"
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_seiko.bin $(TOPDIR)/nand_tmpa9xx/autoboot_ddr_16bit.binary $(TOPDIR)/u-boot.bin 2048
 
 u_boot_tonga2_tfttimer_eth: $(obj)u-boot.bin
@@ -1064,7 +1072,9 @@ topas910_nand_config \
 topasa900_nor_config \
 topasa900_nand_config \
 tonga2_config \
-tonga2_seiko_config \
+tonga2_seiko_WVF0HZ_config \
+tonga2_seiko_WQF0H_config \
+tonga2_seiko_HVF0H_config \
 tonga2_tfttimer_eth_config \
 tonga2_tfttimer_config: unconfig
 	@$(MKCONFIG) -n $@ -t tmpa9xx $(@:_config=) arm arm926ejs tmpa9xx - tmpa9xx
