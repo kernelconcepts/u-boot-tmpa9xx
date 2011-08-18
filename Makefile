@@ -432,6 +432,10 @@ u_boot_tonga2: $(obj)u-boot.bin
 		@echo "Generating Tonga2 board NAND Flash image"
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2.bin $(TOPDIR)/nand_tmpa9xx/autoboot_ddr_16bit.binary $(TOPDIR)/u-boot.bin 2048
 
+u_boot_tonga2_application_only: $(obj)u-boot.bin
+		@echo "Generating Tonga2 board NAND Flash image for application only"
+		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_application_only.bin $(TOPDIR)/nand_tmpa9xx/autoboot_ddr_16bit.binary $(TOPDIR)/u-boot.bin 2048
+
 u_boot_tonga2_seiko_WVF0HZ: $(obj)u-boot.bin
 		@echo "Generating Tonga2 TFTTimer board with Seiko WVF0HZ Display Adapter NAND Flash image"
 		@$(TOPDIR)/nand_tmpa9xx/gen_nand_image.sh $(TOPDIR)/u-boot_nand_tonga2_seiko.bin $(TOPDIR)/nand_tmpa9xx/autoboot_ddr_16bit.binary $(TOPDIR)/u-boot.bin 2048
@@ -1072,6 +1076,7 @@ topas910_nand_config \
 topasa900_nor_config \
 topasa900_nand_config \
 tonga2_config \
+tonga2_application_only_config \
 tonga2_seiko_WVF0HZ_config \
 tonga2_seiko_WQF0H_config \
 tonga2_seiko_HVF0H_config \

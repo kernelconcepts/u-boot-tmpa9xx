@@ -26,10 +26,6 @@
 #include <netdev.h>
 #include "asm/arch-tmpa9xx/tmpa9xx.h"
 
-#define NAND_SIZE    0x10000000 /* 256 MB NAND Flash */
-#define KERNEL_SIZE  0x00300000	/* keep some spare for further kernel development */
-#define SPLASH_SIZE  0x00300000	/* enought for 1024x768x32 */
-
 DECLARE_GLOBAL_DATA_PTR;
 
 /*
@@ -136,28 +132,8 @@ int dram_init (void)
 }
 
 #ifdef CONFIG_NAND_DYNPART
-unsigned int dynpart_size[] = {
-    CONFIG_SYS_ENV_OFFSET,      /* before is (size of) u-boot */
 
-    CONFIG_SYS_ENV_SECT_SIZE,   /* one page for the u-boot environment */
+/* Little bit tricky - partitioning is defined inside board file */
+CONFIG_NAND_DYNPART_PARTITIONING
 
-    SPLASH_SIZE,
-
-    KERNEL_SIZE,
-    
-    NAND_SIZE-
-    CONFIG_SYS_ENV_OFFSET-
-    CONFIG_SYS_ENV_SECT_SIZE-
-    SPLASH_SIZE-
-    KERNEL_SIZE,                /* rest of nand */
-    
-    0 };
-    
-char *dynpart_names[] = {
-    "u-boot",
-    "u-boot_env",
-    "splash",
-    "kernel",
-    "rootfs",
-     NULL };
 #endif

@@ -93,8 +93,32 @@
 #define CONFIG_SYS_MAX_NAND_DEVICE          1
 #define CONFIG_SYS_NAND_MAX_CHIPS           1
 #define CFG_MAX_NAND_DEVICE                 CONFIG_SYS_NAND_MAX_CHIPS
-
 #define CONFIG_CMD_NAND
+
+#define CONFIG_NAND_SIZE    0x10000000 /* 256 MB NAND Flash */
+#define CONFIG_KERNEL_SIZE  0x00300000	/* keep some spare for further kernel development */
+#define CONFIG_SPLASH_SIZE  0x00300000	/* enought for 1024x768x32 */
+
+#define CONFIG_NAND_DYNPART_PARTITIONING						\
+	unsigned int dynpart_size[] = {							\
+	    CONFIG_SYS_ENV_OFFSET,      /* before is (size of) u-boot */		\
+	    CONFIG_SYS_ENV_SECT_SIZE,   /* one page for the u-boot environment */	\
+	    CONFIG_SPLASH_SIZE,								\
+	    CONFIG_KERNEL_SIZE,								\
+	    CONFIG_NAND_SIZE-								\
+	    CONFIG_SYS_ENV_OFFSET-							\
+	    CONFIG_SYS_ENV_SECT_SIZE-							\
+	    CONFIG_SPLASH_SIZE-								\
+	    CONFIG_KERNEL_SIZE,         /* rest of nand */				\
+	    0 };									\
+	char *dynpart_names[] = {							\
+	    "u-boot",									\
+	    "u-boot_env",								\
+	    "splash",									\
+	    "kernel",									\
+	    "rootfs",									\
+	     NULL };
+
 #endif /* USE_NAND */
 
 /* Reconfigure some stuff if booting from NOR is selected */

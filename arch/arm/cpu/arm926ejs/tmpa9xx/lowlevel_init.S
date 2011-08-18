@@ -255,7 +255,11 @@ DMC_DATA1:
 DMC_DATA4:
 		.word	0x80033
 #else
-#error "Unknown burst setting"
+#warning "Unknown burst setting - using BURST4"
+DMC_DATA1:
+		.word	0x10011
+DMC_DATA4:
+		.word	0x80032
 #endif
 
 /* BIT1: DRVOSC_H, BIT3: EXTIN_H, BIT5: XEN, BIT6,7: USBCLKSEL */
