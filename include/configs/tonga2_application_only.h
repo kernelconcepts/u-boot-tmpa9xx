@@ -38,23 +38,9 @@
 #define MTDIDS_DEFAULT                      "nand0=tmpa9xx-nand"
 
 /* Enviroment vaiables */
-#define CONFIG_PREBOOT                      "run setup"
-#define CONFIG_BOOTCOMMAND                  "nand read 0x40600000 0x3A0000 0x1400000;go 0x40600000"
+#define CONFIG_BOOTCOMMAND                  "nand erase.chip;nand bad;dynpart;nand write 0x40060000 u-boot;nand write 0x40700000 application"
 
-#define CONFIG_EXTRA_ENV_SETTINGS           "update_application_dhcp=dhcp application-tonga2; nand erase.part application; nand write ${fileaddr} application ${filesize}\0" \
-                                            "update_application_tftp=tftp application-tonga2; nand erase.part application; nand write ${fileaddr} application ${filesize}\0" \
-                                            "videoparams=video=tmpa9xxfb:19211e4c:10040cef:013f380d:00010828\0" \
-                                            "verify=n\0" \
-                                            "setup=" \
-                                            "if test -n mtdparts; then " \
-                                               "nand bad;"\
-                                               "dynpart;"\
-                                               "nand env.oob set u-boot_env;"\
-                                               "setenv setup;"\
-                                               "setenv preboot;"\
-                                               "saveenv;"\
-                                               "reset;"\
-                                            "fi\0"
+
 /* Include generic part */
 #include "tmpa9xx-generic.h"
 

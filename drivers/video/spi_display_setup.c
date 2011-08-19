@@ -95,6 +95,36 @@ static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
 
 #endif /* DISPLAY_35WVF0HZ2 */
 
+#ifdef DISPLAY_37WVF0HZ1
+#define TRANSMIT_BITS 16
+static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
+	{ {0x20,                                              -1},
+          {0x3a,0x70,                                         -1},
+          {0xb1,0x06,0x1e,0x0c,                               -1},
+          {0xb2,0x10,0xc8,                                    -1},
+          {0xb3,0x00,                                         -1},
+          {0xb4,0x04,                                         -1},
+          {0xb5,0x01,0x20,0x20,0x00,0x00,                     -1},
+          {0xb6,0x01,0x18,0x02,0x40,0x10,0x40,                -1},
+          {0xc3,0x02,0x04,0x03,0x03,0x03,                     -1},
+          {0xc4,0x12,0x22,0x10,0x0c,0x03,0x6e,                -1},
+          {0xc5,0x76,                                         -1},
+          {0xf9,0x40,                                         -1},
+          {0xc6,0x27,0x50,                                    -1},
+          {0xd0,0x10,0x72,0x44,0x10,0x06,0x03,0x60,0x16,0x02, -1},
+          {0xd1,0x10,0x72,0x44,0x10,0x06,0x03,0x60,0x16,0x02, -1},
+          {0xd2,0x10,0x72,0x44,0x10,0x06,0x03,0x60,0x16,0x02, -1},
+          {0xd3,0x10,0x72,0x44,0x10,0x06,0x03,0x60,0x16,0x02, -1},
+          {0xd4,0x10,0x72,0x44,0x10,0x06,0x03,0x60,0x16,0x02, -1},
+          {0xd5,0x10,0x72,0x44,0x10,0x06,0x03,0x60,0x16,0x02, -1},
+          {0x29,                                              -1},
+          {0x11,                                              -1},
+          {  -1                                                 },
+        };
+
+#endif /* DISPLAY_37WVF0HZ1 */
+
+
 #ifdef DISPLAY_35HVF0H
 #define TRANSMIT_BITS 8
 static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
@@ -186,6 +216,43 @@ static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
 
 #endif /* DISPLAY_30WQF0H */
 
+#ifdef DISPLAY_NEC_NL2432HC22
+#define TRANSMIT_BITS 16
+static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
+	{ 
+          {0x65, 0x3F, -1},
+          {0x66, 0x3F, -1},
+          {0x67, 0x00, -1},
+          {0x68, 0x00, -1},
+          {0x69, 0x30, -1},
+          {0x6A, 0x04, -1},
+          {0x6B, 0x37, -1},
+          {0x6C, 0x17, -1},
+          {0x6D, 0x00, -1},
+          {0x6E, 0x40, -1},
+          {0x6F, 0x30, -1},
+          {0x70, 0x04, -1},
+          {0x71, 0x37, -1},
+          {0x72, 0x17, -1},
+          {0x73, 0x00, -1},
+          {0x74, 0x40, -1},
+          {0x51, 0x00, -1},
+          {0x52, 0x2E, -1},
+          {0x53, 0xC4, -1},
+          {0x60, 0x22, -1},
+          {0x19, 0x76, -1},
+          {0x1A, 0x54, -1},
+          {0x1B, 0x67, -1},
+          {0x1D, 0x04, -1},
+          {0x1E, 0x1C, -1},
+          {0x1F, 0xA9, -1},
+          {0x18, 0x77, -1},
+          {  -2,20000, -1},
+          {0x00, 0x00, -1},
+          {  -1,         },
+        };
+
+#endif /* DISPLAY_NEC_NL2432HC22 */
 
 static void display_reset(int reset)
 {
@@ -369,8 +436,11 @@ int setup_spi_display(void)
 		{
 	                memset (transfer,0,4);
         	        memset (dummy,0,4);
-                
+#ifdef DISPLAY_NEC_NL2432HC22
+	        	transfer[0]=0x00;
+#else                
 	        	transfer[0]=0x70;
+#endif                        
 			if (TRANSMIT_BITS==16)
 		                transfer[1]=display_setup[i][0] & 0xff;
 			else
@@ -382,7 +452,11 @@ int setup_spi_display(void)
 
 	                while (display_setup[i][j]!=-1)
 	                {
+#ifdef DISPLAY_NEC_NL2432HC22
+	               		transfer[0]=0x01;
+#else
 	               		transfer[0]=0x72;
+#endif                                
 				if (TRANSMIT_BITS==16)
 			                transfer[1]=display_setup[i][j] & 0xff;
 				else

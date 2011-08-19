@@ -36,9 +36,7 @@
 
 /* Select Display */
 #define CONFIG_DISPLAY_SPI_SETUP
-//#define DISPLAY_32WVF0HZ1
-//#define DISPLAY_35WVF0HZ2
-#define DISPLAY_37WVF0HZ1
+#define DISPLAY_NEC_NL2432HC22
 
 
 /* SPI usage */
@@ -58,7 +56,7 @@
                                             "rootfs_jffs2=root=/dev/mtdblock4 rootfstype=jffs2\0" \
                                             "rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
                                             "rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\
-                                            "videoparams=video=tmpa9xxfb:1c020274:0a020b1f:01df3802:00010828\0" \
+                                            "videoparams=video=tmpa9xxfb:04040838:0101093f:00ef1814:00010828\0" \
                                             "bootargs_base=setenv bootargs console=ttyS0,115200n8 consoleblank=0 ${rootfs} ${mtdparts} ${videoparams} ethaddr=${ethaddr}\0" \
                                             "verify=n\0" \
                                             "setup=" \
