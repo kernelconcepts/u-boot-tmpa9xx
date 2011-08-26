@@ -217,9 +217,12 @@ static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
 #endif /* DISPLAY_30WQF0H */
 
 #ifdef DISPLAY_NEC_NL2432HC22
-#define TRANSMIT_BITS 16
+#define TRANSMIT_BITS 32
 static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
 	{ 
+          {0x03, 0x01, -1},
+          {0x01, 0x00, -1},
+          {0x64, 0x0F, -1},
           {0x65, 0x3F, -1},
           {0x66, 0x3F, -1},
           {0x67, 0x00, -1},
@@ -236,16 +239,27 @@ static int display_setup[MAX_SEQUENCE][MAX_VALUE] =
           {0x72, 0x17, -1},
           {0x73, 0x00, -1},
           {0x74, 0x40, -1},
+          {0x02, 0x40, -1},
+          {0x4B, 0x04, -1},
+          {0x4C, 0x01, -1},
+          {0x4D, 0x01, -1},
+          {0x50, 0x00, -1},
           {0x51, 0x00, -1},
           {0x52, 0x2E, -1},
           {0x53, 0xC4, -1},
+          {0x56, 0x15, -1},
+          {0x57, 0xED, -1},
+          {0x5F, 0x3F, -1},
           {0x60, 0x22, -1},
           {0x19, 0x76, -1},
           {0x1A, 0x54, -1},
           {0x1B, 0x67, -1},
+          {0x1C, 0x60, -1},
           {0x1D, 0x04, -1},
           {0x1E, 0x1C, -1},
           {0x1F, 0xA9, -1},
+          {0x20, 0x00, -1},
+          {0x21, 0x20, -1},
           {0x18, 0x77, -1},
           {  -2,20000, -1},
           {0x00, 0x00, -1},
@@ -436,27 +450,27 @@ int setup_spi_display(void)
 		{
 	                memset (transfer,0,4);
         	        memset (dummy,0,4);
-#ifdef DISPLAY_NEC_NL2432HC22
-	        	transfer[0]=0x00;
-#else                
 	        	transfer[0]=0x70;
-#endif                        
 			if (TRANSMIT_BITS==16)
 		                transfer[1]=display_setup[i][0] & 0xff;
-			else
+			else if (TRANSMIT_BITS==24)
         	        {
 		                transfer[1]=(display_setup[i][0] >> 8) & 0xff;
 		                transfer[2]=(display_setup[i][0] >> 0) & 0xff;
-			}                                                        
+			}
+                        else // TRANSMIT_BITS==32
+                        {
+		        	transfer[0]=0x00;
+		                transfer[1]=display_setup[i][0] & 0xff;
+		        	transfer[2]=0x01;
+		                transfer[3]=display_setup[i][1] & 0xff;
+                                j=2;
+                        }
 	                ret |= spi_xfer(slave, TRANSMIT_BITS, transfer, dummy, SPI_XFER_BEGIN | SPI_XFER_END);
 
 	                while (display_setup[i][j]!=-1)
 	                {
-#ifdef DISPLAY_NEC_NL2432HC22
-	               		transfer[0]=0x01;
-#else
 	               		transfer[0]=0x72;
-#endif                                
 				if (TRANSMIT_BITS==16)
 			                transfer[1]=display_setup[i][j] & 0xff;
 				else
