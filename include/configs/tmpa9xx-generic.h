@@ -198,6 +198,8 @@
 #define CONFIG_CMD_MEMORY
 #define CONFIG_CMD_RUN
 #define CONFIG_CMD_BOOTD
+#define CONFIG_CMD_LOADS
+#define CONFIG_CMD_LOADB
 
 #if defined USE_DM9000 || defined USE_SMCS91XX
 #define CONFIG_CMD_PING
