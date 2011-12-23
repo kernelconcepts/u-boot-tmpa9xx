@@ -40,6 +40,7 @@
 /* Enviroment vaiables */
 #define CONFIG_BOOTCOMMAND                  "nand erase.chip;nand bad;dynpart;nand write 0x40060000 u-boot;nand write 0x40700000 application"
 
+#define CONFIG_CMD_LOADB
 
 /* Include generic part */
 #include "tmpa9xx-generic.h"
