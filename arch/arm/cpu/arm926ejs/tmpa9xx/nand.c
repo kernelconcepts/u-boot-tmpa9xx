@@ -340,11 +340,12 @@ static int tmpa9xx_nand_verify_buf(struct mtd_info *mtd, const uint8_t *buf, int
 
 	tmpa9xx_nand_set_rw_mode(1);
 	while(!tmpa9xx_nand_dev_ready(mtd));
+	priv->column += len;
 
 	for (i = 0; i < len; i++) {
 		uint8_t x = NDFDTR;
 		if (buf[i] != x) {
-			printf("ERROR: verify mismatch @ page addr %p\n", priv->page_addr);
+			printf("ERROR: verify mismatch @ page addr %u\n", priv->page_addr);
 			return -1;
 		}
 	}
