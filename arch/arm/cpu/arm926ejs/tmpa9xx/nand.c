@@ -327,6 +327,31 @@ static void tmpa9xx_nand_write_buf(struct mtd_info *mtd, const u_char *buf, int 
         former_column = priv->column;       
 }
 
+static int tmpa9xx_nand_verify_buf(struct mtd_info *mtd, const uint8_t *buf, int len)
+{
+	struct nand_chip *chip = mtd->priv;
+	struct tmpa9xx_nand_private *priv =
+		(struct tmpa9xx_nand_private *)chip->priv;
+	int i;
+
+	tmpa9xx_nand_set_cmd(NAND_CMD_READ0);
+	tmpa9xx_nand_set_addr(priv->column,priv->page_addr);
+	tmpa9xx_nand_set_cmd(NAND_CMD_READSTART);
+
+	tmpa9xx_nand_set_rw_mode(1);
+	while(!tmpa9xx_nand_dev_ready(mtd));
+
+	for (i = 0; i < len; i++) {
+		uint8_t x = NDFDTR;
+		if (buf[i] != x) {
+			printf("ERROR: verify mismatch @ page addr %p\n", priv->page_addr);
+			return -1;
+		}
+	}
+
+	return 0;
+}
+
 static void tmpa9xx_nand_enable_hwecc(struct mtd_info *mtd, int mode)
 {
 	tmpa9xx_nand_start_ecc(mode == NAND_ECC_READ);
@@ -675,6 +700,7 @@ int board_nand_init(struct nand_chip *nand)
 	nand->read_byte     = tmpa9xx_nand_read_byte;
 	nand->read_buf      = tmpa9xx_nand_read_buf;
 	nand->write_buf     = tmpa9xx_nand_write_buf;
+	nand->verify_buf    = tmpa9xx_nand_verify_buf;
 	
 	/* ECC Mode */
 	nand->ecc.mode      = NAND_ECC_HW;
