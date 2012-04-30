@@ -94,6 +94,7 @@
 #define CONFIG_SYS_NAND_MAX_CHIPS           1
 #define CFG_MAX_NAND_DEVICE                 CONFIG_SYS_NAND_MAX_CHIPS
 #define CONFIG_CMD_NAND
+/* #define CONFIG_MTD_NAND_VERIFY_WRITE */
 
 #define CONFIG_NAND_SIZE    0x10000000 /* 256 MB NAND Flash */
 #define CONFIG_KERNEL_SIZE  0x00300000	/* keep some spare for further kernel development */
@@ -198,6 +199,8 @@
 #define CONFIG_CMD_MEMORY
 #define CONFIG_CMD_RUN
 #define CONFIG_CMD_BOOTD
+#define CONFIG_CMD_LOADS
+#define CONFIG_CMD_LOADB
 
 #if defined USE_DM9000 || defined USE_SMCS91XX
 #define CONFIG_CMD_PING
