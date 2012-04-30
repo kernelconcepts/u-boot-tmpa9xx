@@ -107,7 +107,7 @@ int board_init (void)
 	/* adress of boot parameters */
 	gd->bd->bi_boot_params = LINUX_BOOT_PARAM_ADDR;
 	
-        gd->flags = GD_FLG_RELOC | GD_FLG_DEVINIT | GD_FLG_SILENT;
+        gd->flags = GD_FLG_RELOC | GD_FLG_SILENT;
 	return 0;
 }
 
