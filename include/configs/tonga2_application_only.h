@@ -38,7 +38,7 @@
 #define MTDIDS_DEFAULT                      "nand0=tmpa9xx-nand"
 
 /* Enviroment vaiables */
-#define CONFIG_BOOTCOMMAND                  "nand erase.chip;nand bad;dynpart;nand write 0x40060000 u-boot;nand write 0x40700000 application"
+#define CONFIG_BOOTCOMMAND                  "nand read 0x40600000 0x3A0000 0x1400000;go 0x40600000"
 
 #define CONFIG_CMD_LOADB
 
