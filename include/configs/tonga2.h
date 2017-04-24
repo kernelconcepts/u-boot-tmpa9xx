@@ -45,6 +45,7 @@
                                             "update_rootfs_dhcp=dhcp rootfs       ; nand erase.part rootfs; nand write ${fileaddr} rootfs ${filesize}\0" \
                                             "update_kernel_tftp=tftp uImage-tonga2; nand erase.part kernel; nand write ${fileaddr} kernel            \0" \
                                             "update_rootfs_tftp=tftp rootfs       ; nand erase.part rootfs; nand write ${fileaddr} rootfs ${filesize}\0" \
+                                            "update_uboot=dhcp u-boot_nand_tonga2.bin; nand device 1;nand erase 0 0x80000; nand write ${fileaddr} 0 ${filesize}\0" \
                                             "rootfs_jffs2=root=/dev/mtdblock4 rootfstype=jffs2\0" \
                                             "rootfs_ubifs=ubi.mtd=4 root=ubi0:rootfs rootfstype=ubifs\0" \
                                             "rootfs_base=setenv rootfs ${rootfs_jffs2}\0"\

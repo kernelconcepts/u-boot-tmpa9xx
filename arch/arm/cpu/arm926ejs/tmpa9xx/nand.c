@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009,2010
+ * (C) Copyright 2009, 2010, 2017
  * Kernel Concepts <www.kernelconcepts.de>
  * Florian Boor (florian.boor@kernelconcepts.de)
  *
@@ -31,6 +31,11 @@
 #define DMA_TIMEOUT  0xFFFF
 #define NAND_DMA_TRANSFER_SIZE 512
 
+#define MAX_WAIT_FOR_HW		100000
+
+/* id marker for multiple acess methods for single flash */
+static int id = 0;
+
 struct tmpa9xx_nand_timing {
 	unsigned int splw;
 	unsigned int sphw;
@@ -47,17 +52,34 @@ struct tmpa9xx_nand_private {
 	unsigned int page_addr;
         unsigned int rndout;
 	struct tmpa9xx_nand_timing timing;
+	unsigned int needs_onchip_ecc;
 };
 
+static unsigned int onchip_ecc_enabled = 0;
+
 /* Nand Control */
-struct tmpa9xx_nand_private tmpa9xx_nand = {
-	.dma	= 1,
-	.timing =
-	{
-		.splw = 0x2,
-		.sphw = 0x2,
-		.splr = 0x2,
-		.sphr = 0x2,
+struct tmpa9xx_nand_private tmpa9xx_nand[2] = {
+	{	
+		.dma	= 1,
+		.timing =
+		{
+			.splw = 0x2,
+			.sphw = 0x2,
+			.splr = 0x2,
+			.sphr = 0x2,
+		},
+		.needs_onchip_ecc = 0,
+	},
+	{	
+		.dma	= 1,
+		.timing =
+		{
+			.splw = 0x2,
+			.sphw = 0x2,
+			.splr = 0x2,
+			.sphr = 0x2,
+		},
+		.needs_onchip_ecc = 0,
 	},
 };
 
@@ -153,12 +175,23 @@ static void tmpa9xx_nand_start_autoload(unsigned int read)
 	NDFMCR1 = val;
 }
 
-static void tmpa9xx_nand_start_ecc(unsigned int read)
+static void tmpa9xx_nand_start_ecc(unsigned int read, unsigned int mlc)
 {
+	/* 28.11.2016 (sae): Take care of datasheet annotation page 327:
+	   Before reading ECC registers, be sure to set NDFMCR0<ECCE> to 0 ...
+	   After that, i have seen ecc handling in function. Without that, just sometimes.
+	   Debug messages showed, that ECCE was on, everytime.
+	*/
+/*	NDFMCR0 &= ~NDFMCR0_ECCE;
+
+	if (mlc && read == 0) {
+		NDFMCR0 |= NDFMCR0_RSEDN;
+	}
+*/
 	if (read)
 		NDFMCR0 |= NDFMCR0_ECCE |  NDFMCR0_ECCRST;
 	else
-		NDFMCR0 |= NDFMCR0_ECCE |  NDFMCR0_ECCRST | NDFMCR0_RSEDN;
+		NDFMCR0 |= NDFMCR0_ECCE |  NDFMCR0_ECCRST | /*NDFMCR0_WE*/NDFMCR0_RSEDN;
 }
 
 static void tmpa9xx_nand_set_rw_mode(unsigned int read)
@@ -247,10 +280,80 @@ static void tmpa9xx_nand_set_addr(unsigned int column, unsigned int page_addr)
 	NDFMCR0 &= ~(NDFMCR0_ALE |NDFMCR0_WE);
 }
 
+static int tmpa9xx_wait_nand_dev_ready(void)
+{
+	int count = 0;
+
+
+	while ( ((NDFMCR0 & NDFMCR0_BUSY)==NDFMCR0_BUSY) && count < MAX_WAIT_FOR_HW)
+        	count++;
+
+	if (count>= MAX_WAIT_FOR_HW)
+        {
+        	printk(KERN_ERR " tmpa9xx_wait_nand_dev_ready timeout\n");
+                return 0;
+	}
+        return 1;
+}
+
+
+/* Switch Micron on-chip ECC function */
+static void tmpa9xx_nand_set_feature_ecc(int enable)
+{
+	unsigned char buf[4] = { 0x00, 0x00, 0x00, 0x00 };
+	int i;
+
+	if (enable) 
+		buf[0] = 0x08;
+
+	/* write parameters */
+	tmpa9xx_nand_set_cmd(NAND_CMD_SET_FEATURES);
+	tmpa9xx_nand_set_addr(-1, 0x90);
+	tmpa9xx_nand_set_rw_mode(0);	/* Set controller to write mode */
+	tmpa9xx_wait_nand_dev_ready();
+
+	for (i = 0; i < 4; i++)
+		NDFDTR = buf[i];
+	tmpa9xx_wait_nand_dev_ready();
+
+	/* check parameters */
+	tmpa9xx_nand_set_cmd(NAND_CMD_GET_FEATURES);
+	tmpa9xx_nand_set_addr(-1, 0x90);
+	tmpa9xx_nand_set_rw_mode(1);	/* Set controller to read mode */
+	tmpa9xx_wait_nand_dev_ready();
+
+	for (i = 0; i < 4; i++)
+		buf[i] = tmpa9xx_nand_read_byte(NULL);
+	printk ("\nMicron ECC feature: %s\n", (buf[0] == 0x08) ? "enabled" : "disabled" );
+}
+
+static void tmpa9xx_nand_check_enable_feature_ecc(struct mtd_info *mtd)
+{
+	struct nand_chip *this = mtd->priv;
+	struct tmpa9xx_nand_private * priv= (struct tmpa9xx_nand_private *)this->priv;
+	
+	if (priv->needs_onchip_ecc) {
+		if (!onchip_ecc_enabled) {
+			printf("NAND ECC enable\n");
+			tmpa9xx_nand_set_feature_ecc(1);
+			onchip_ecc_enabled = 1;
+		}
+	} else {
+		if (onchip_ecc_enabled) {
+			printf("NAND ECC disable\n");
+			tmpa9xx_nand_set_feature_ecc(0);
+			onchip_ecc_enabled = 0;
+		}
+	}
+}
+
+
 static void tmpa9xx_nand_read_buf(struct mtd_info *mtd, u_char *buf, int len)
 {
 	struct nand_chip *this = mtd->priv;
 	struct tmpa9xx_nand_private * priv= (struct tmpa9xx_nand_private *)this->priv;
+	
+	tmpa9xx_nand_check_enable_feature_ecc(mtd);
 
 	if ((len==NAND_DMA_TRANSFER_SIZE) && (priv->dma==1))
         {
@@ -296,6 +399,8 @@ static void tmpa9xx_nand_write_buf(struct mtd_info *mtd, const u_char *buf, int 
 	struct nand_chip *this = mtd->priv;
 	struct tmpa9xx_nand_private * priv= (struct tmpa9xx_nand_private *)this->priv;
         static int former_column;
+
+	tmpa9xx_nand_check_enable_feature_ecc(mtd);
 
 	if (priv->column==0 || (former_column!=2048 && len==64))
         {
@@ -355,7 +460,7 @@ static int tmpa9xx_nand_verify_buf(struct mtd_info *mtd, const uint8_t *buf, int
 
 static void tmpa9xx_nand_enable_hwecc(struct mtd_info *mtd, int mode)
 {
-	tmpa9xx_nand_start_ecc(mode == NAND_ECC_READ);
+	tmpa9xx_nand_start_ecc(mode == NAND_ECC_READ, 0);
 }
 
 static int  tmpa9xx_nand_calculate_ecc(struct mtd_info *mtd, const unsigned char *dat, unsigned char *ecc_code)
@@ -547,11 +652,16 @@ static int tmpa9xx_nand_part_correctdata_hamming(struct mtd_info *mtd,
 						 u_char * read_ecc,
 						 u_char * calc_ecc)
 {
+	register struct nand_chip *this = mtd->priv;
+	struct tmpa9xx_nand_private * priv= (struct tmpa9xx_nand_private *)this->priv;
 	int ret1;
 	int ret2;
 
 	ret1 = tmpa9xx_nand_part_correctdata_hamming_256(mtd, dat+256, read_ecc,   calc_ecc);
 	ret2 = tmpa9xx_nand_part_correctdata_hamming_256(mtd, dat,     read_ecc+3, calc_ecc+3);
+
+	if (onchip_ecc_enabled)
+		return 0;
 
 	/* all went fine */
 	if (!ret1 && !ret2)
@@ -612,6 +722,8 @@ static void tmpa9xx_nand_command (struct mtd_info *mtd, unsigned command, int co
 	register struct nand_chip *this = mtd->priv;
 	struct tmpa9xx_nand_private * priv= (struct tmpa9xx_nand_private *)this->priv;
 
+	tmpa9xx_nand_check_enable_feature_ecc(mtd);
+
 	switch (command)
 	{
 	case NAND_CMD_READ0:
@@ -626,13 +738,15 @@ static void tmpa9xx_nand_command (struct mtd_info *mtd, unsigned command, int co
 		break;
 
 	case NAND_CMD_READOOB:
-        	priv->rndout=0;
+        priv->rndout=0;
 		priv->column=priv->page_size;
-                priv->page_addr=page_addr;
+        priv->page_addr=page_addr;
 		break;
 
 	case NAND_CMD_ERASE1:
-        	priv->rndout=0;
+        priv->rndout=0;
+        priv->page_addr=page_addr;
+		tmpa9xx_nand_check_enable_feature_ecc(mtd);
 		tmpa9xx_nand_set_cmd(NAND_CMD_ERASE1);
 		tmpa9xx_nand_set_addr(-1,page_addr);
 		break;
@@ -738,19 +852,25 @@ static void tmpa9xx_nand_get_internal_structure(struct tmpa9xx_nand_private *pri
         	priv->page_size = 512;
                 priv->spare_size=  16;
         }
+
+		/* check for new Micron flash, Tonga only! */
+        if ((id_code[0] == 0x2c) && !id) {
+        	priv->needs_onchip_ecc = 1;
+			printf("Micron flash mode set\n");
+		}
 }	
 
 int board_nand_init(struct nand_chip *nand)
 {	
 	struct tmpa9xx_nand_private * priv;
-	priv = &tmpa9xx_nand;
+	priv = &tmpa9xx_nand[id];
 
-       	nand->priv = priv;
+	nand->priv = priv;
 	
 	nand->IO_ADDR_R     = (void  __iomem *)(&NDFDTR);
 	nand->IO_ADDR_W     = (void  __iomem *)(&NDFDTR);
 	
-	nand->chip_delay    = 0;
+	nand->chip_delay    = 100;
 #ifdef CONFIG_SYS_NAND_USE_FLASH_BBT
 	nand->options	   |= NAND_USE_FLASH_BBT;
 #endif
@@ -773,7 +893,10 @@ int board_nand_init(struct nand_chip *nand)
  	tmpa9xx_nand_select_chip(NULL,0);
  	tmpa9xx_nand_set_timing(priv);
 	tmpa9xx_nand_get_internal_structure(priv);
-        
+
+	if (priv->needs_onchip_ecc)
+		priv->dma = 0;
+       
 	if (priv->dma==1)
 	{
 		nand->ecc.mode      = NAND_ECC_HW;
@@ -806,8 +929,19 @@ int board_nand_init(struct nand_chip *nand)
 	{
 		nand->ecc.mode      = NAND_ECC_SOFT;
 	}
-	NDFMCR0 =0x0;
-	NDFMCR1 =0x0;
+
+	/* special handling of micron flash */
+	if (priv->needs_onchip_ecc) {
+		nand->ecc.mode = NAND_ECC_NONE;
+		tmpa9xx_nand_set_feature_ecc(1);
+		onchip_ecc_enabled = 1;
+	}
+
+	NDFMCR0 = 0x0;
+	NDFMCR1 = 0x0;
+
+	/* increment id after successful initialisation */
+	id++;
 
 	return 0;
 }
