@@ -88,7 +88,7 @@ void nand_init(void)
 			nand_curr_device = i;
 	}
 	printf("%u MiB\n", size / 1024);
-
+	nand_select_device(0);
 #ifdef CONFIG_SYS_NAND_SELECT_DEVICE
 	/*
 	 * Select the chip in the board/cpu specific driver

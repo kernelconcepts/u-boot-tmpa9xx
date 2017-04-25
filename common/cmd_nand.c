@@ -124,6 +124,12 @@ static int set_dev(int dev)
 	return 0;
 }
 
+int nand_select_device(int dev)
+{
+	return set_dev(dev);
+}
+
+
 static inline int str2off(const char *p, loff_t *num)
 {
 	char *endptr;
@@ -162,14 +168,16 @@ static int get_part(const char *partname, int *idx, loff_t *off, loff_t *size,in
 	}
 
 	*off = part->offset;
-
 #ifdef CONFIG_NAND_DYNPART                               
         if (*size > part->size)
                 if (net)
                         *size = nand_net_part_size(part);
                 else
-#endif                                       
+#endif 
+{                                       
                 *size = part->size;
+}
+printf("GP5 %d %x psz %p len %ld \n", net, /*nand_net_part_size(part)*/3145728, size, *size );
 
 	*idx = dev->id->num;
 
@@ -188,7 +196,6 @@ static int arg_off(const char *arg, int *idx, loff_t *off, loff_t *maxsize, int 
 {
 	if (!str2off(arg, off))
 		return get_part(arg, idx, off, maxsize, net);
-
 	if (*off >= nand_info[*idx].size) {
 		puts("Offset exceeds device limit\n");
 		return -1;

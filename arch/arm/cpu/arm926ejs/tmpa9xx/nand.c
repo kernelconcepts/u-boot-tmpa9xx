@@ -746,7 +746,6 @@ static void tmpa9xx_nand_command (struct mtd_info *mtd, unsigned command, int co
 	case NAND_CMD_ERASE1:
         priv->rndout=0;
         priv->page_addr=page_addr;
-		tmpa9xx_nand_check_enable_feature_ecc(mtd);
 		tmpa9xx_nand_set_cmd(NAND_CMD_ERASE1);
 		tmpa9xx_nand_set_addr(-1,page_addr);
 		break;
