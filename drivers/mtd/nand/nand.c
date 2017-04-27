@@ -87,8 +87,14 @@ void nand_init(void)
 		if (nand_curr_device == -1)
 			nand_curr_device = i;
 	}
+
+#ifdef TONGA2
+	printf("%u MiB\n", size / 1024 / i);
+#else
 	printf("%u MiB\n", size / 1024);
+#endif
 	nand_select_device(0);
+
 #ifdef CONFIG_SYS_NAND_SELECT_DEVICE
 	/*
 	 * Select the chip in the board/cpu specific driver
