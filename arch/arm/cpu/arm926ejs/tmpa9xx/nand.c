@@ -182,12 +182,12 @@ static void tmpa9xx_nand_start_ecc(unsigned int read, unsigned int mlc)
 	   After that, i have seen ecc handling in function. Without that, just sometimes.
 	   Debug messages showed, that ECCE was on, everytime.
 	*/
-/*	NDFMCR0 &= ~NDFMCR0_ECCE;
+	NDFMCR0 &= ~NDFMCR0_ECCE;
 
 	if (mlc && read == 0) {
 		NDFMCR0 |= NDFMCR0_RSEDN;
 	}
-*/
+
 	if (read)
 		NDFMCR0 |= NDFMCR0_ECCE |  NDFMCR0_ECCRST;
 	else
@@ -334,13 +334,13 @@ static void tmpa9xx_nand_check_enable_feature_ecc(struct mtd_info *mtd)
 	
 	if (priv->needs_onchip_ecc) {
 		if (!onchip_ecc_enabled) {
-			printf("NAND ECC enable\n");
+//			printf("NAND ECC enable\n");
 			tmpa9xx_nand_set_feature_ecc(1);
 			onchip_ecc_enabled = 1;
 		}
 	} else {
 		if (onchip_ecc_enabled) {
-			printf("NAND ECC disable\n");
+//			printf("NAND ECC disable\n");
 			tmpa9xx_nand_set_feature_ecc(0);
 			onchip_ecc_enabled = 0;
 		}
