@@ -195,7 +195,7 @@
 /* U-Boot command configuration */
 #define CONFIG_CMD_MTDPARTS
 #define CONFIG_CMD_JFFS2
-#undef  CONFIG_CMD_UBI
+#define CONFIG_CMD_UBI
 #define CONFIG_CMD_BMP
 #define CONFIG_CMD_MEMORY
 #define CONFIG_CMD_RUN
